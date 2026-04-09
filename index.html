@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sabrina Grosse — Web Developer & DevOps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Karla:wght@400;500&family=Rubik:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #faf5f1;
+      --teal:       #3D7B78;
+      --teal-light: #5A9E9B;
+      --purple:     #7B4F82;
+      --gold:       #C9932A;
+      --rust:       #B84A24;
+      --dark-green: #2A4F3E;
+      --navy:       #243D6E;
+      --ink:        #1C1C1C;
+      --muted:      #6B6B6B;
+      --white:      #FFFFFF;
+      --grid:       rgba(61,123,120,0.11);
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Karla', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── Hero ─── */
+    #hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-color: var(--cream);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+
+    .hero-name {
+      position: absolute;
+      top: 36px; left: 52px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(28px, 3vw, 46px);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--teal);
+    }
+
+    .hero-sub {
+      position: absolute;
+      bottom: 48px; right: 60px;
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-hint {
+      position: absolute;
+      bottom: 48px; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(107,107,107,0.45);
+      white-space: nowrap;
+    }
+
+    .hero-stage-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .disk-stage {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+      perspective: 900px;
+    }
+
+    /* ─── Floppy Disk ─── */
+    .floppy {
+      width: var(--w, 130px);
+      height: var(--h, 138px);
+      border-radius: 6px;
+      background:
+        linear-gradient(155deg,
+          color-mix(in srgb, var(--clr) 88%, white) 0%,
+          var(--clr) 45%,
+          color-mix(in srgb, var(--clr) 82%, black) 100%);
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), box-shadow 0.28s ease;
+      box-shadow:
+        3px 6px 16px rgba(0,0,0,0.22),
+        6px 18px 36px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
+      user-select: none;
+      transform: translateY(var(--offset, 0px));
+      overflow: hidden;
+    }
+    .floppy::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg,
+        rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 28%, transparent 55%);
+      pointer-events: none;
+      z-index: 14;
+    }
+    .floppy::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 16px; height: 16px;
+      background: linear-gradient(225deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+      z-index: 15;
+    }
+    .floppy:hover {
+      transform: translateY(calc(var(--offset, 0px) - 16px)) scale(1.05) rotateY(var(--tilt, -6deg));
+      box-shadow: 4px 24px 52px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.2);
+      z-index: 10;
+    }
+    .floppy-notch {
+      position: absolute;
+      top: 0; left: 9%;
+      width: 9%; height: 11%;
+      background: color-mix(in srgb, var(--clr) 55%, black);
+      border-radius: 0 0 4px 4px;
+      box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);
+    }
+    .floppy-hd {
+      position: absolute;
+      top: 6%; right: 18%;
+      font-family: 'Karla', sans-serif;
+      font-size: calc(var(--w, 130px) * 0.052);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.5);
+      z-index: 2;
+    }
+    .floppy-shutter-area {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 46%; height: 33%;
+    }
+    .floppy-shutter-plate {
+      position: absolute; inset: 0;
+      background: linear-gradient(170deg, #EBEBEB 0%, #D2D2D2 30%, #BABABA 60%, #D8D8D8 100%);
+      border-radius: 0 0 5px 5px;
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .floppy-shutter-plate::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #F4F4F4, #E0E0E0, #F4F4F4);
+    }
+    .floppy-shutter-plate::after {
+      content: '';
+      position: absolute; top: 0; left: -3px; right: -3px; bottom: 0;
+      background: linear-gradient(90deg,
+        rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 3px,
+        transparent 3px, transparent calc(100% - 3px),
+        rgba(0,0,0,0.18) calc(100% - 3px));
+    }
+    .floppy-slot {
+      position: absolute;
+      top: 28%; left: 50%;
+      transform: translateX(-50%);
+      width: 52%; height: 44%;
+      background: linear-gradient(160deg, #1a1a1a, #0a0a0a);
+      border-radius: 2px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.9);
+    }
+    .floppy-slot::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 28%; height: 60%;
+      background: radial-gradient(ellipse at 40% 35%, rgba(180,160,100,0.35) 0%, transparent 100%);
+      border-radius: 50%;
+    }
+    .floppy-label {
+      position: absolute;
+      top: 36%; left: 7%; right: 7%; bottom: 7%;
+      background: linear-gradient(180deg, #f7f2ea 0%, #f0ebe2 100%);
+      border-radius: 3px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 10% 9%;
+      border-top: 5px solid;
+      border-image: linear-gradient(90deg, #B8B8B8, #DCDCDC, #B8B8B8) 1;
+      box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.06);
+    }
+    .floppy-label::before {
+      content: 'imation';
+      position: absolute; top: -3px; right: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: calc(var(--w, 130px) * 0.044);
+      font-weight: 400; letter-spacing: 0.12em;
+      color: rgba(80,60,40,0.45); line-height: 1; font-style: italic;
+    }
+    .floppy-lines { position: absolute; top: 10px; left: 10%; right: 10%; }
+    .floppy-lines span {
+      display: block; height: 1px;
+      background: rgba(0,0,0,0.09);
+      margin-bottom: calc(var(--w, 130px) * 0.038);
+    }
+    .floppy-lines span:last-child { width: 50%; }
+    .floppy-section {
+      font-family: 'Inter', sans-serif;
+      font-size: calc(var(--w, 130px) * 0.051);
+      font-weight: 300; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 2px;
+    }
+    .floppy-title {
+      font-family: 'Karla', sans-serif;
+      font-size: calc(var(--w, 130px) * 0.072);
+      font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--clr); line-height: 1.1;
+    }
+
+    @keyframes floppy-launch {
+      0%   { transform: translateY(var(--offset, 0px)) scale(1);      opacity: 1; }
+      22%  { transform: translateY(calc(var(--offset, 0px) - 36px))  scale(1.1); opacity: 1; }
+      60%  { transform: translateY(calc(var(--offset, 0px) - 160px)) scale(0.8); opacity: 0.7; }
+      100% { transform: translateY(calc(var(--offset, 0px) - 420px)) scale(0.2); opacity: 0; }
+    }
+    .floppy.inserting {
+      animation: floppy-launch 0.55s cubic-bezier(0.4,0,0.6,1) forwards;
+      pointer-events: none; transition: none; z-index: 20;
+    }
+
+    /* ─── Panel Overlay ─── */
+    .panel-overlay {
+      position: fixed; inset: 0;
+      background-color: var(--cream);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 44px 44px;
+      transform: translateY(100%);
+      transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+      z-index: 300;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-overlay.open { transform: translateY(0); }
+
+    .panel-accent { height: 5px; background: var(--panel-clr, var(--teal)); flex-shrink: 0; }
+
+    .panel-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 52px; flex-shrink: 0;
+      border-bottom: 1px solid rgba(28,28,28,0.07);
+    }
+    .panel-bar-left { display: flex; align-items: center; gap: 16px; }
+    .panel-num {
+      font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 300;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+    }
+    .panel-title {
+      font-family: 'Rubik', sans-serif;
+      font-size: 22px; font-weight: 400; color: var(--ink); letter-spacing: 0.04em;
+    }
+    .panel-close {
+      width: 40px; height: 40px;
+      border: 1.5px solid rgba(28,28,28,0.15); border-radius: 50%;
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: var(--ink);
+      transition: background 0.2s, border-color 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .panel-close:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+    .panel-body {
+      flex: 1; overflow: visible;
+      position: relative;
+      padding: 0;
+      display: flex;
+      align-items: center; justify-content: center;
+    }
+    /* Re-clip only the multi-disk panels */
+    #panel-work.active, #panel-skills.active,
+    #panel-experience.active, #panel-education.active {
+      overflow: hidden;
+    }
+
+    .panel-content { display: none; }
+    .panel-content.active { display: block; }
+
+    /* ─── ABOUT panel ─── */
+    .about-card {
+      background: var(--white); border-radius: 20px;
+      padding: 48px 56px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05), 0 16px 48px rgba(0,0,0,0.07);
+      max-width: 960px; margin: 0 auto;
+    }
+    .about-hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 72px;
+      align-items: center;
+    }
+    .about-intro-label {
+      font-family: 'Rubik', sans-serif;
+      font-size: clamp(18px, 2vw, 24px);
+      font-weight: 400; font-style: italic;
+      color: var(--muted); margin-bottom: 2px;
+    }
+    .about-intro-name {
+      font-family: 'Rubik', sans-serif;
+      font-size: clamp(52px, 6.5vw, 88px);
+      font-weight: 700; line-height: 0.92;
+      color: var(--ink); letter-spacing: -0.01em;
+      margin-bottom: 32px;
+    }
+    .about-intro-name span { color: var(--purple); }
+    .about-bio {
+      font-family: 'Karla', sans-serif;
+      font-size: 13px; color: var(--muted);
+      line-height: 2.1; margin-bottom: 40px;
+      max-width: 460px;
+    }
+    .resume-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 32px;
+      background: var(--ink); color: var(--white);
+      border-radius: 100px; text-decoration: none;
+      font-family: 'Inter', sans-serif; font-size: 12px;
+      font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .resume-btn:hover { background: #333; transform: translateY(-2px); }
+    .about-photo {
+      width: 280px; height: 360px;
+      object-fit: cover; object-position: center top;
+      border-radius: 160px 160px 24px 24px;
+      box-shadow: 6px 20px 52px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    /* ─── WORK panel ─── */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(2,1fr);
+      gap: 24px; max-width: 1000px; margin: 0 auto;
+    }
+    .project-card {
+      background: var(--white); border-radius: 16px; overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .project-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.09); }
+    .project-spine { height: 6px; }
+    .project-card-body { padding: 28px 30px; }
+    .project-tag {
+      font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 300;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    .project-title {
+      font-family: 'Rubik', sans-serif;
+      font-size: 20px; font-weight: 400; color: var(--ink);
+      margin-bottom: 10px; line-height: 1.2;
+    }
+    .project-desc {
+      font-family: 'Karla', sans-serif;
+      font-size: 11px; color: var(--muted); line-height: 1.9; list-style: none;
+    }
+    .project-desc li { padding-left: 14px; position: relative; margin-bottom: 3px; }
+    .project-desc li::before { content: '—'; position: absolute; left: 0; color: var(--teal); }
+    .project-link {
+      display: inline-block; margin-top: 14px;
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--teal); text-decoration: none;
+      border-bottom: 1px solid var(--teal); padding-bottom: 1px;
+      transition: opacity 0.2s;
+    }
+    .project-link:hover { opacity: 0.6; }
+
+    /* ─── SKILLS panel ─── */
+    .skills-full-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 24px; max-width: 900px; margin: 0 auto;
+    }
+    .skills-full-card {
+      background: var(--white); border-radius: 16px; padding: 28px 30px;
+    }
+    .skills-full-card-label {
+      font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 14px;
+    }
+    .skills-full-card-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .skills-full-card-tags span {
+      padding: 5px 12px; background: var(--cream);
+      border-radius: 100px;
+      font-family: 'Karla', sans-serif;
+      font-size: 11px; color: var(--ink);
+    }
+
+    /* ─── EXPERIENCE panel ─── */
+    .experience-card {
+      background: var(--white); border-radius: 20px;
+      padding: 40px 48px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05), 0 16px 48px rgba(0,0,0,0.07);
+      max-width: 100%; margin: 0 auto;
+    }
+    .timeline {
+      columns: 2;
+      column-gap: 40px;
+      max-width: 100%;
+    }
+    .timeline-item {
+      break-inside: avoid;
+      display: grid; grid-template-columns: 80px 1fr;
+      gap: 14px; padding: 14px 0;
+      border-bottom: 1px solid rgba(28,28,28,0.08);
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-date {
+      font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 300;
+      color: var(--muted); padding-top: 3px; line-height: 1.5;
+    }
+    .timeline-role {
+      font-family: 'Rubik', sans-serif;
+      font-size: 17px; font-weight: 400; color: var(--ink); margin-bottom: 1px;
+      line-height: 1.2;
+    }
+    .timeline-company {
+      font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 300;
+      color: var(--teal); letter-spacing: 0.09em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .timeline-bullets { list-style: none; }
+    .timeline-bullets li {
+      font-family: 'Karla', sans-serif;
+      font-size: 10.5px; color: var(--muted);
+      line-height: 1.7; padding-left: 14px;
+      position: relative; margin-bottom: 1px;
+    }
+    .timeline-bullets li::before { content: '—'; position: absolute; left: 0; color: var(--teal); font-size: 10px; }
+
+    /* ─── EDUCATION panel ─── */
+    .edu-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 32px; max-width: 860px; margin: 0 auto;
+    }
+    .edu-card { background: var(--white); border-radius: 18px; padding: 38px; }
+    .edu-card-label {
+      font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 300;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--teal); margin-bottom: 12px;
+    }
+    .edu-card-school {
+      font-family: 'Rubik', sans-serif;
+      font-size: 22px; font-weight: 400; color: var(--ink); margin-bottom: 4px;
+    }
+    .edu-card-degree {
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .edu-card-date {
+      font-family: 'Inter', sans-serif; font-size: 10px;
+      color: var(--muted); letter-spacing: 0.04em; margin-bottom: 16px;
+    }
+    .edu-card-desc {
+      font-family: 'Karla', sans-serif;
+      font-size: 11px; color: var(--muted); line-height: 1.9;
+    }
+
+    /* ─── CONTACT panel ─── */
+    .contact-panel-inner {
+      max-width: 780px; margin: 0 auto; text-align: center;
+    }
+    .contact-heading {
+      font-family: 'Rubik', sans-serif;
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 400; line-height: 1.05;
+      color: var(--ink); margin-bottom: 12px;
+    }
+    .contact-heading em { font-style: normal; font-weight: 400; color: var(--teal); letter-spacing: 0.08em; }
+    .contact-subtitle {
+      font-family: 'Karla', sans-serif;
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 44px; line-height: 1.8;
+    }
+    .contact-form-card {
+      background: var(--white); border-radius: 24px; padding: 48px 52px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05), 0 16px 48px rgba(0,0,0,0.07);
+      border: 1.5px solid rgba(61,123,120,0.1); text-align: left;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; font-family: 'Inter', sans-serif;
+      font-size: 10px; font-weight: 500; color: var(--muted);
+      margin-bottom: 8px; letter-spacing: 0.06em;
+    }
+    .form-group label .req { color: var(--teal); }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 13px 18px;
+      border: 1.5px solid rgba(28,28,28,0.12); border-radius: 10px;
+      background: var(--cream);
+      font-family: 'Karla', sans-serif;
+      font-size: 13px; color: var(--ink); outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      -webkit-appearance: none; resize: none;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(28,28,28,0.25); }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--teal); background: var(--white); }
+    .form-group textarea { height: 110px; }
+    .form-submit-wrap { text-align: center; margin-top: 8px; }
+    .form-btn {
+      display: inline-flex; align-items: center;
+      padding: 15px 56px; background: var(--ink); color: var(--white);
+      border: none; border-radius: 100px;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 400;
+      letter-spacing: 0.06em; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .form-btn:hover { background: #333; transform: translateY(-2px); }
+    .contact-links {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 8px 28px; margin-top: 36px;
+    }
+    .contact-link {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .contact-link:hover { color: var(--teal); }
+    .contact-link-icon {
+      width: 28px; height: 28px;
+      border: 1px solid rgba(28,28,28,0.12); border-radius: 6px;
+      background: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+    /* ─── DISK CLUSTER (multi-disk panels) ─── */
+    /* Cluster panels use flex-wrap so disks auto-center */
+    #panel-work.active, #panel-skills.active,
+    #panel-experience.active, #panel-education.active {
+      position: absolute; inset: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: center;
+      gap: 40px 28px;
+      padding: 24px 48px;
+    }
+    .disk-cluster-item {
+      --panel-clr: var(--clr, var(--teal));
+      position: relative;
+      flex-shrink: 0;
+      width: var(--cw, 260px);
+      height: var(--ch, 274px);
+      border-radius: 6px;
+      background: linear-gradient(155deg,
+        color-mix(in srgb, var(--clr, var(--teal)) 88%, white) 0%,
+        var(--clr, var(--teal)) 45%,
+        color-mix(in srgb, var(--clr, var(--teal)) 82%, black) 100%);
+      box-shadow:
+        3px 6px 16px rgba(0,0,0,0.22),
+        6px 18px 36px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
+      transform: rotate(var(--rot,0deg)) perspective(700px) rotateY(var(--tilt,0deg)) translateY(var(--dy,0px));
+      transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), box-shadow 0.28s, z-index 0s;
+    }
+    .disk-cluster-item:hover {
+      transform: rotate(var(--rot,0deg)) perspective(700px) rotateY(var(--tilt,0deg)) translateY(calc(var(--dy,0px) - 14px)) scale(1.06);
+      box-shadow: 4px 24px 52px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.2);
+      z-index: 50;
+    }
+    .disk-cluster-item::before {
+      content: ''; position: absolute; inset: 0; border-radius: 6px;
+      background: linear-gradient(145deg,
+        rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 30%, transparent 55%);
+      pointer-events: none; z-index: 14;
+    }
+    .disk-cluster-item::after {
+      content: ''; position: absolute; top: 0; right: 0;
+      width: 14px; height: 14px;
+      background: linear-gradient(225deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+      z-index: 15;
+    }
+    .disk-cluster-item .disk-frame-label-body { padding: 10px 14px 6px; display: flex; flex-direction: column; overflow: hidden; }
+    .disk-cluster-item .project-link,
+    .disk-cluster-item .timeline-item .project-link { margin-top: auto; }
+    .disk-cluster-item .disk-frame-label-foot { height: 28px; }
+    /* Compact type */
+    .disk-cluster-item .project-title { font-size: 14px; margin-bottom: 6px; }
+    .disk-cluster-item .project-desc { flex: 1; }
+    .disk-cluster-item .project-desc li { font-size: 9px; line-height: 1.5; margin-bottom: 2px; }
+    .disk-cluster-item .project-link { font-size: 8px; margin-top: 8px; flex-shrink: 0; }
+    .disk-cluster-item .project-card { background: transparent; border-radius: 0; overflow: visible; box-shadow: none; }
+    .disk-cluster-item .project-card:hover { transform: none; box-shadow: none; }
+    .disk-cluster-item .project-spine { display: none; }
+    .disk-cluster-item .project-card-body { padding: 0; }
+    .disk-cluster-item .project-tag { font-size: 7.5px; }
+    .disk-cluster-item .timeline-item { display: block; padding: 0; border-bottom: none; }
+    .disk-cluster-item .timeline-date { font-size: 8.5px; margin-bottom: 3px; display: block; }
+    .disk-cluster-item .timeline-role { font-size: 14px; margin-bottom: 1px; }
+    .disk-cluster-item .timeline-company { font-size: 7.5px; margin-bottom: 6px; }
+    .disk-cluster-item .timeline-bullets li { font-size: 9px; line-height: 1.5; margin-bottom: 1px; }
+    .disk-cluster-item .skills-full-card { background: transparent; padding: 0 0 12px; border-radius: 0; margin-top: -10px; }
+    .disk-cluster-item .skills-full-card-label { font-size: 9px; margin-bottom: 9px; }
+    .disk-cluster-item .skills-full-card-tags span { font-size: 11px; padding: 4px 10px; }
+    .disk-cluster-item .edu-card { background: transparent; padding: 0; border-radius: 0; box-shadow: none; }
+    .disk-cluster-item .edu-card-label { font-size: 8px; margin-bottom: 8px; }
+    .disk-cluster-item .edu-card-school { font-size: 17px; }
+    .disk-cluster-item .edu-card-degree { font-size: 10px; margin-bottom: 3px; }
+    .disk-cluster-item .edu-card-date { font-size: 9px; margin-bottom: 10px; }
+    .disk-cluster-item .edu-card-desc { font-size: 9.5px; line-height: 1.6; }
+
+    /* ─── DISK FRAME (large panel floppy) ─── */
+    .disk-frame {
+      position: relative;
+      width: min(660px, calc(100vw - 40px));
+      height: min(700px, calc(100vh - 108px));
+      border-radius: 8px;
+      background: linear-gradient(155deg,
+        color-mix(in srgb, var(--panel-clr, var(--teal)) 88%, white) 0%,
+        var(--panel-clr, var(--teal)) 45%,
+        color-mix(in srgb, var(--panel-clr, var(--teal)) 82%, black) 100%);
+      box-shadow:
+        4px 8px 24px rgba(0,0,0,0.28),
+        8px 28px 56px rgba(0,0,0,0.22),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
+      flex-shrink: 0;
+    }
+    .disk-frame::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 8px;
+      background: linear-gradient(145deg,
+        rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.04) 30%, transparent 55%);
+      pointer-events: none; z-index: 14;
+    }
+    .disk-frame::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 22px; height: 22px;
+      background: linear-gradient(225deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+      z-index: 15;
+    }
+    .disk-frame-notch {
+      position: absolute; top: 0; left: 11%;
+      width: 6%; height: 8%;
+      background: color-mix(in srgb, var(--panel-clr, var(--teal)) 50%, black);
+      border-radius: 0 0 5px 5px;
+      box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3); z-index: 10;
+    }
+    .disk-frame-hd-label {
+      position: absolute; top: 5%; right: 15%;
+      font-family: 'Karla', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.45); z-index: 2;
+    }
+    .disk-frame-shutter-area {
+      position: absolute; top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 44%; height: 32%;
+    }
+    .disk-frame-shutter-plate {
+      position: absolute; inset: 0;
+      background: linear-gradient(170deg, #EBEBEB 0%, #D2D2D2 30%, #BABABA 60%, #D8D8D8 100%);
+      border-radius: 0 0 7px 7px;
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.5), 0 1px 4px rgba(0,0,0,0.25);
+    }
+    .disk-frame-shutter-plate::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #F4F4F4, #E0E0E0, #F4F4F4);
+    }
+    .disk-frame-shutter-plate::after {
+      content: '';
+      position: absolute; top: 0; left: -4px; right: -4px; bottom: 0;
+      background: linear-gradient(90deg,
+        rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 4px,
+        transparent 4px, transparent calc(100% - 4px),
+        rgba(0,0,0,0.18) calc(100% - 4px));
+    }
+    .disk-frame-slot {
+      position: absolute; top: 28%; left: 50%;
+      transform: translateX(-50%);
+      width: 50%; height: 44%;
+      background: linear-gradient(160deg, #1a1a1a, #0a0a0a);
+      border-radius: 2px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.9);
+    }
+    .disk-frame-label {
+      position: absolute;
+      top: 35%; left: 5%; right: 5%; bottom: 5%;
+      background: linear-gradient(180deg, #f7f2ea 0%, #f0ebe2 100%);
+      border-radius: 3px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      border-top: 6px solid;
+      border-image: linear-gradient(90deg, #C0C0C0, #E0E0E0, #C0C0C0) 1;
+      box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.07);
+    }
+    .disk-frame-label-header {
+      padding: 7px 16px 6px; flex-shrink: 0;
+      border-bottom: 2px solid var(--panel-clr, var(--teal));
+      display: flex; align-items: center;
+    }
+    .disk-frame-index-text {
+      font-family: 'Karla', sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--panel-clr, var(--teal));
+    }
+    .disk-frame-label-body {
+      flex: 1; overflow-y: auto;
+      padding: 16px 22px 12px;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent, transparent 26px,
+        rgba(0,0,0,0.045) 26px, rgba(0,0,0,0.045) 27px
+      );
+      background-attachment: local;
+      scrollbar-width: thin;
+      scrollbar-color: var(--panel-clr, var(--teal)) transparent;
+    }
+    .disk-frame-label-foot {
+      height: 44px; flex-shrink: 0;
+      background: color-mix(in srgb, var(--panel-clr, var(--teal)) 55%, #5c3a1a);
+    }
+    .disk-about-photo-wrap {
+      position: absolute;
+      top: 50%; right: 14px; transform: translateY(-50%);
+      width: 210px; height: 310px;
+      border-radius: 100px 100px 14px 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+      z-index: 20;
+      background: url('img/sabrina_new.jpeg') 62% 38% / 115% no-repeat;
+      -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+    }
+    .disk-about-photo { display: none; }
+
+    /* Reserve space so photo doesn't overlap bio text */
+    #panel-about .disk-frame-label-body { padding-right: 224px; overflow: hidden; }
+
+    /* Content sizing inside disk label */
+    .disk-frame-label-body .about-intro-label { font-size: 11px; }
+    .disk-frame-label-body .about-intro-name {
+      font-size: clamp(28px, 4vw, 40px); margin-bottom: 8px; line-height: 0.95;
+    }
+    .disk-frame-label-body .about-bio {
+      font-size: 9.5px; line-height: 1.7; margin-bottom: 10px; max-width: none;
+    }
+    .disk-frame-label-body .resume-btn { padding: 10px 24px; font-size: 10px; }
+
+    .disk-frame-label-body .timeline { columns: 1; }
+    .disk-frame-label-body .timeline-item {
+      padding: 10px 0; gap: 10px; grid-template-columns: 68px 1fr;
+    }
+    .disk-frame-label-body .timeline-role { font-size: 15px; }
+    .disk-frame-label-body .timeline-bullets li { font-size: 10px; }
+
+    .disk-frame-label-body .projects-grid {
+      grid-template-columns: 1fr; gap: 14px; max-width: 100%;
+    }
+    .disk-frame-label-body .project-card-body { padding: 18px 22px; }
+    .disk-frame-label-body .project-title { font-size: 16px; }
+
+    .disk-frame-label-body .skills-full-grid {
+      grid-template-columns: 1fr 1fr; gap: 12px; max-width: 100%;
+    }
+    .disk-frame-label-body .skills-full-card { padding: 16px 18px; }
+
+    .disk-frame-label-body .edu-grid {
+      grid-template-columns: 1fr; gap: 12px; max-width: 100%;
+    }
+    .disk-frame-label-body .edu-card { padding: 20px 24px; border-radius: 12px; }
+    .disk-frame-label-body .edu-card-school { font-size: 18px; }
+
+    .disk-frame-label-body .contact-panel-inner { max-width: 100%; }
+    .disk-frame-label-body .contact-heading {
+      font-size: clamp(18px, 2.6vw, 22px); margin-bottom: 8px;
+    }
+    .disk-frame-label-body .contact-subtitle { display: none; }
+    .disk-frame-label-body .contact-form-card {
+      padding: 10px 12px; border-radius: 10px;
+      box-shadow: none; border: 1px solid rgba(61,123,120,0.12);
+    }
+    .disk-frame-label-body .form-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .disk-frame-label-body .form-group { margin-bottom: 8px; }
+    .disk-frame-label-body .form-group label { margin-bottom: 4px; font-size: 9px; }
+    .disk-frame-label-body .form-group input { padding: 7px 10px; font-size: 11px; }
+    .disk-frame-label-body .form-group textarea { padding: 7px 10px; font-size: 11px; height: 52px; }
+    .disk-frame-label-body .form-submit-wrap { margin-top: 4px; }
+    .disk-frame-label-body .form-btn { padding: 9px 32px; font-size: 10px; }
+    .disk-frame-label-body .contact-links {
+      margin-top: 8px; gap: 3px 12px;
+      justify-content: center; flex-wrap: wrap;
+    }
+    .disk-frame-label-body .contact-link { font-size: 9px; }
+    .disk-frame-label-body .contact-link-icon { width: 18px; height: 18px; font-size: 8px; }
+    /* No scroll on About / Contact disks */
+    #panel-about .disk-frame-label-body,
+    #panel-contact .disk-frame-label-body { overflow: hidden; }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Hero ─── -->
+  <section id="hero">
+    <p class="hero-name">Sabrina Grosse</p>
+
+    <div class="hero-stage-wrap">
+      <div class="disk-stage">
+
+        <div class="floppy" style="--clr:var(--purple);--offset:-60px;--w:112px;--h:119px;"
+             data-panel="about" role="button" aria-label="About" tabindex="0">
+          <div class="floppy-notch"></div><span class="floppy-hd">HD</span>
+          <div class="floppy-shutter-area"><div class="floppy-shutter-plate"></div><div class="floppy-slot"></div></div>
+          <div class="floppy-label"><div class="floppy-lines"><span></span><span></span><span></span></div>
+            <p class="floppy-section">01</p><p class="floppy-title">About</p></div>
+        </div>
+
+        <div class="floppy" style="--clr:var(--gold);--offset:58px;--w:150px;--h:159px;"
+             data-panel="work" role="button" aria-label="Work" tabindex="0">
+          <div class="floppy-notch"></div><span class="floppy-hd">HD</span>
+          <div class="floppy-shutter-area"><div class="floppy-shutter-plate"></div><div class="floppy-slot"></div></div>
+          <div class="floppy-label"><div class="floppy-lines"><span></span><span></span><span></span></div>
+            <p class="floppy-section">02</p><p class="floppy-title">Work</p></div>
+        </div>
+
+        <div class="floppy" style="--clr:var(--teal);--offset:-22px;--w:128px;--h:136px;"
+             data-panel="skills" role="button" aria-label="Skills" tabindex="0">
+          <div class="floppy-notch"></div><span class="floppy-hd">HD</span>
+          <div class="floppy-shutter-area"><div class="floppy-shutter-plate"></div><div class="floppy-slot"></div></div>
+          <div class="floppy-label"><div class="floppy-lines"><span></span><span></span><span></span></div>
+            <p class="floppy-section">03</p><p class="floppy-title">Skills</p></div>
+        </div>
+
+        <div class="floppy" style="--clr:var(--rust);--offset:72px;--w:158px;--h:167px;"
+             data-panel="experience" role="button" aria-label="Experience" tabindex="0">
+          <div class="floppy-notch"></div><span class="floppy-hd">HD</span>
+          <div class="floppy-shutter-area"><div class="floppy-shutter-plate"></div><div class="floppy-slot"></div></div>
+          <div class="floppy-label"><div class="floppy-lines"><span></span><span></span><span></span></div>
+            <p class="floppy-section">04</p><p class="floppy-title">Experience</p></div>
+        </div>
+
+        <div class="floppy" style="--clr:var(--navy);--offset:8px;--w:118px;--h:125px;"
+             data-panel="education" role="button" aria-label="Education" tabindex="0">
+          <div class="floppy-notch"></div><span class="floppy-hd">HD</span>
+          <div class="floppy-shutter-area"><div class="floppy-shutter-plate"></div><div class="floppy-slot"></div></div>
+          <div class="floppy-label"><div class="floppy-lines"><span></span><span></span><span></span></div>
+            <p class="floppy-section">05</p><p class="floppy-title">Education</p></div>
+        </div>
+
+        <div class="floppy" style="--clr:var(--dark-green);--offset:-52px;--w:140px;--h:148px;"
+             data-panel="contact" role="button" aria-label="Contact" tabindex="0">
+          <div class="floppy-notch"></div><span class="floppy-hd">HD</span>
+          <div class="floppy-shutter-area"><div class="floppy-shutter-plate"></div><div class="floppy-slot"></div></div>
+          <div class="floppy-label"><div class="floppy-lines"><span></span><span></span><span></span></div>
+            <p class="floppy-section">06</p><p class="floppy-title">Contact</p></div>
+        </div>
+
+      </div>
+    </div>
+
+    <p class="hero-sub">Web Developer &amp; DevOps</p>
+    <p class="hero-hint">↑ insert a disk to explore</p>
+  </section>
+
+  <!-- ─── Panel Overlay ─── -->
+  <div class="panel-overlay" id="panel" aria-hidden="true">
+    <div class="panel-accent" id="panelAccent"></div>
+    <div class="panel-bar">
+      <div class="panel-bar-left">
+        <span class="panel-num" id="panelNum"></span>
+        <span class="panel-title" id="panelTitle"></span>
+      </div>
+      <button class="panel-close" onclick="closePanel()" aria-label="Close">✕</button>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- About -->
+      <div class="panel-content" id="panel-about">
+        <div class="disk-frame">
+          <div class="disk-frame-notch"></div>
+          <span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area">
+            <div class="disk-frame-shutter-plate"></div>
+            <div class="disk-frame-slot"></div>
+          </div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header">
+              <span class="disk-frame-index-text">01 — About</span>
+            </div>
+            <div class="disk-about-photo-wrap">
+              <img src="img/sabrina_new.jpeg" alt="Sabrina Grosse" class="disk-about-photo" />
+            </div>
+            <div class="disk-frame-label-body">
+              <p class="about-intro-label">I'm</p>
+              <h1 class="about-intro-name">Sabrina<br><span>Grosse</span></h1>
+              <p class="about-bio">
+                I'm a Web Developer with a strong focus on DevOps, and I enjoy being hands-on
+                in website redesign projects. I've been closely involved in redesign efforts
+                where I build and refine WordPress sites, working side by side with
+                cross-functional teams such as designers, marketers, and other team members
+                to roll out updates and improve overall performance. Along the way, I've
+                developed a solid understanding of deployment workflows and infrastructure.
+                I also bring a creative edge through experience in content creation and
+                digital design, which helps me approach projects from both a technical and
+                user-focused perspective.
+              </p>
+              <a href="grosse_resume.pdf" class="resume-btn" download="Grosse_Resume.pdf">↓ &nbsp;Download Resume</a>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work -->
+      <div class="panel-content" id="panel-work">
+
+        <div class="disk-cluster-item" style="--clr:var(--rust);--cw:272px;--ch:318px;--rot:-3deg;--tilt:-4deg;--dy:-6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">WordPress · UX · 2026</span></div>
+            <div class="disk-frame-label-body">
+              <h3 class="project-title">Puttshack Website Redesign</h3>
+              <ul class="project-desc">
+                <li>Full redesign of the WordPress site</li>
+                <li>Built components with HTML and CSS</li>
+                <li>Collaborated across US and UK teams</li>
+                <li>Performance optimization and improvements</li>
+              </ul>
+              <a href="https://www.puttshack.com/" class="project-link" target="_blank">View Site →</a>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--purple);--cw:272px;--ch:318px;--rot:2deg;--tilt:3deg;--dy:6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Content · Digital</span></div>
+            <div class="disk-frame-label-body">
+              <h3 class="project-title">Content &amp; Digital Projects</h3>
+              <ul class="project-desc">
+                <li>Portfolio of digital and web-based projects</li>
+                <li>UGC content for multiple brands</li>
+                <li>Social graphics and digital assets</li>
+                <li>Short-form content for social platforms</li>
+              </ul>
+              <a href="https://canva.link/nbo6mtjuq086p07" class="project-link" target="_blank">View Portfolio →</a>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:272px;--ch:318px;--rot:-1.5deg;--tilt:-3deg;--dy:-4px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">DevOps · 2022–2026</span></div>
+            <div class="disk-frame-label-body">
+              <h3 class="project-title">EKS Infrastructure &amp; CI/CD</h3>
+              <ul class="project-desc">
+                <li>Infrastructure and deployments via AWS EKS</li>
+                <li>Improved release processes for dev teams</li>
+                <li>CI/CD via GitHub and Octopus Deploy</li>
+              </ul>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:272px;--ch:318px;--rot:2.5deg;--tilt:4deg;--dy:4px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Operations · 2015–2019</span></div>
+            <div class="disk-frame-label-body">
+              <h3 class="project-title">Project EDGE — Kroger R&amp;D</h3>
+              <ul class="project-desc">
+                <li>Technical support for 100+ Kroger stores</li>
+                <li>Led digital content distribution team</li>
+                <li>Analyzed data and prioritized solutions</li>
+              </ul>
+              <a href="https://futurestores.wbresearch.com/blog/kroger-rolls-out-edge-clean-energy-cloud-based-signature-solution-strategy-for-retail-shelves" class="project-link" target="_blank">Learn More →</a>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Skills -->
+      <div class="panel-content" id="panel-skills">
+
+        <div class="disk-cluster-item" style="--clr:var(--gold);--cw:296px;--ch:312px;--rot:-2.5deg;--tilt:-3deg;--dy:-6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Frontend</span></div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-card">
+                <div class="skills-full-card-tags">
+                  <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                  <span>WordPress</span><span>PHP</span><span>Responsive Design</span>
+                </div>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:296px;--ch:312px;--rot:1.5deg;--tilt:2deg;--dy:6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">DevOps</span></div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-card">
+                <div class="skills-full-card-tags">
+                  <span>Kubernetes</span><span>AWS EKS</span><span>CI/CD</span>
+                  <span>GitHub Actions</span><span>Octopus Deploy</span><span>Datadog</span>
+                </div>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--purple);--cw:296px;--ch:312px;--rot:-1deg;--tilt:-2deg;--dy:-4px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Design</span></div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-card">
+                <div class="skills-full-card-tags">
+                  <span>Figma</span><span>Canva</span><span>UX</span><span>Digital Assets</span>
+                </div>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--rust);--cw:296px;--ch:312px;--rot:2deg;--tilt:3deg;--dy:6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Tools</span></div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-card">
+                <div class="skills-full-card-tags">
+                  <span>VS Code</span><span>GitHub</span><span>Jira</span><span>Notion</span>
+                </div>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:296px;--ch:312px;--rot:-2deg;--tilt:-4deg;--dy:-4px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Content</span></div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-card">
+                <div class="skills-full-card-tags">
+                  <span>UGC</span><span>Social Media</span><span>Short-form Video</span><span>Copywriting</span>
+                </div>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--dark-green);--cw:296px;--ch:312px;--rot:1deg;--tilt:2deg;--dy:4px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Soft Skills</span></div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-card">
+                <div class="skills-full-card-tags">
+                  <span>Cross-team Collab</span><span>Problem Solving</span>
+                  <span>Project Management</span><span>QA Testing</span>
+                </div>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Experience -->
+      <div class="panel-content" id="panel-experience">
+
+        <div class="disk-cluster-item" style="--clr:var(--rust);--cw:300px;--ch:316px;--rot:-2.5deg;--tilt:-3deg;--dy:-6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Jan 2026 — Present</span></div>
+            <div class="disk-frame-label-body">
+              <div class="timeline-item">
+                <p class="timeline-role">Web Developer</p>
+                <p class="timeline-company">Puttshack Inc.</p>
+                <ul class="timeline-bullets">
+                  <li>WordPress site redesign</li>
+                  <li>HTML/CSS component development</li>
+                  <li>US &amp; UK cross-team collaboration</li>
+                  <li>Performance optimization</li>
+                </ul>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:300px;--ch:316px;--rot:1.5deg;--tilt:2deg;--dy:6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Mar 2022 — Jan 2026</span></div>
+            <div class="disk-frame-label-body">
+              <div class="timeline-item">
+                <p class="timeline-role">DevOps Engineer</p>
+                <p class="timeline-company">Puttshack Inc.</p>
+                <ul class="timeline-bullets">
+                  <li>Infrastructure via AWS EKS</li>
+                  <li>Improved CI/CD pipelines</li>
+                  <li>Website infra and development</li>
+                </ul>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--gold);--cw:300px;--ch:316px;--rot:-1deg;--tilt:-2deg;--dy:-8px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Aug 2020 — Feb 2022</span></div>
+            <div class="disk-frame-label-body">
+              <div class="timeline-item">
+                <p class="timeline-role">Process Manager</p>
+                <p class="timeline-company">P.L. Marketing</p>
+                <ul class="timeline-bullets">
+                  <li>Directed multi-team project implementation</li>
+                  <li>QA testing for features and enhancements</li>
+                </ul>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:300px;--ch:316px;--rot:2deg;--tilt:3deg;--dy:6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Jun 2019 — Aug 2020</span></div>
+            <div class="disk-frame-label-body">
+              <div class="timeline-item">
+                <p class="timeline-role">Floor Planning Analyst</p>
+                <p class="timeline-company">P.L. Marketing</p>
+                <ul class="timeline-bullets">
+                  <li>Floor planning analyst for LAMCOE</li>
+                  <li>Mastered JDA; assisted in testing</li>
+                </ul>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--dark-green);--cw:300px;--ch:316px;--rot:-1deg;--tilt:-3deg;--dy:-6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Oct 2015 — Jan 2019</span></div>
+            <div class="disk-frame-label-body">
+              <div class="timeline-item">
+                <p class="timeline-role">Operations / Technical Analyst</p>
+                <p class="timeline-company">Ascendum — Kroger R&amp;D</p>
+                <ul class="timeline-bullets">
+                  <li>Support for 100+ Kroger stores</li>
+                  <li>Led digital content distribution</li>
+                  <li>Data analysis and prioritization</li>
+                </ul>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Education -->
+      <div class="panel-content" id="panel-education">
+
+        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:380px;--ch:402px;--rot:-2deg;--tilt:-4deg;--dy:-6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Degree</span></div>
+            <div class="disk-frame-label-body">
+              <div class="edu-card">
+                <p class="edu-card-school">University of Cincinnati</p>
+                <p class="edu-card-degree">Information Technology, B.S.</p>
+                <p class="edu-card-date">Aug 2015 — May 2019</p>
+                <p class="edu-card-desc">Earned a B.S. in Information Technology while working full-time — demonstrating strong time management and the ability to apply classroom concepts directly to real-world problems.</p>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:380px;--ch:402px;--rot:2deg;--tilt:4deg;--dy:6px;">
+          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Certification</span></div>
+            <div class="disk-frame-label-body">
+              <div class="edu-card">
+                <p class="edu-card-school">CKA</p>
+                <p class="edu-card-degree">Certified Kubernetes Administrator</p>
+                <p class="edu-card-date">Expires June 2026</p>
+                <p class="edu-card-desc">Demonstrates proficiency in Kubernetes administration including cluster management, deployment strategies, and troubleshooting at scale.</p>
+              </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Contact -->
+      <div class="panel-content" id="panel-contact">
+        <div class="disk-frame">
+          <div class="disk-frame-notch"></div>
+          <span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area">
+            <div class="disk-frame-shutter-plate"></div>
+            <div class="disk-frame-slot"></div>
+          </div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header">
+              <span class="disk-frame-index-text">06 — Contact</span>
+            </div>
+            <div class="disk-frame-label-body">
+        <div class="contact-panel-inner">
+          <h2 class="contact-heading">Let's build <em>something</em> together.</h2>
+          <p class="contact-subtitle">
+            Open to new opportunities, collaborations, and interesting problems.<br>
+            Reach out — I'd love to hear from you.
+          </p>
+          <div class="contact-form-card">
+            <form onsubmit="return false;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>First name <span class="req">*</span></label>
+                  <input type="text" placeholder="Jane" required />
+                </div>
+                <div class="form-group">
+                  <label>Last name <span class="req">*</span></label>
+                  <input type="text" placeholder="Smith" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email <span class="req">*</span></label>
+                <input type="email" placeholder="jane@example.com" required />
+              </div>
+              <div class="form-group">
+                <label>Message</label>
+                <textarea placeholder="Tell me about your project or opportunity…"></textarea>
+              </div>
+              <div class="form-submit-wrap">
+                <button type="submit" class="form-btn">Send Message</button>
+              </div>
+            </form>
+          </div>
+          <div class="contact-links">
+            <a href="mailto:sabrina.grosse19@gmail.com" class="contact-link">
+              <span class="contact-link-icon">✉</span>sabrina.grosse19@gmail.com
+            </a>
+            <a href="tel:5139282207" class="contact-link">
+              <span class="contact-link-icon">✆</span>513-928-2207
+            </a>
+            <a href="#" class="contact-link">
+              <span class="contact-link-icon">in</span>LinkedIn
+            </a>
+            <a href="/grosse_resume.pdf" class="contact-link" download>
+              <span class="contact-link-icon">↓</span>Download Resume
+            </a>
+          </div>
+        </div>
+            </div>
+            <div class="disk-frame-label-foot"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-body -->
+  </div><!-- /panel-overlay -->
+
+  <script>
+    const panelMeta = {
+      about:      { num: '01 — About',      title: 'About',      clr: '#7B4F82' },
+      work:       { num: '02 — Work',       title: 'Work',       clr: '#C9932A' },
+      skills:     { num: '03 — Skills',     title: 'Skills',     clr: '#3D7B78' },
+      experience: { num: '04 — Experience', title: 'Experience', clr: '#B84A24' },
+      education:  { num: '05 — Education',  title: 'Education',  clr: '#243D6E' },
+      contact:    { num: '06 — Contact',    title: 'Contact',    clr: '#2A4F3E' },
+    };
+
+    const overlay  = document.getElementById('panel');
+    const accent   = document.getElementById('panelAccent');
+    const numEl    = document.getElementById('panelNum');
+    const titleEl  = document.getElementById('panelTitle');
+
+    function openPanel(panelId) {
+      document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + panelId).classList.add('active');
+      const meta = panelMeta[panelId];
+      numEl.textContent  = meta.num;
+      titleEl.textContent = meta.title;
+      accent.style.background = meta.clr;
+      overlay.style.setProperty('--panel-clr', meta.clr);
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePanel() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('.floppy').forEach(disk => {
+      function activate() {
+        if (disk.classList.contains('inserting')) return;
+        const panelId = disk.dataset.panel;
+        disk.classList.add('inserting');
+        setTimeout(() => {
+          openPanel(panelId);
+          setTimeout(() => disk.classList.remove('inserting'), 400);
+        }, 480);
+      }
+      disk.addEventListener('click', activate);
+      disk.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closePanel();
+    });
+  </script>
+
+</body>
+</html>
