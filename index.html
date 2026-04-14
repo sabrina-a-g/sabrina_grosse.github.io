@@ -103,100 +103,68 @@
     .floppy {
       width: var(--w, 130px);
       height: var(--h, 138px);
-      border-radius: 4px;
-      background-color: #f5f0e8;
-      background-size: 125%;
-      background-position: center;
+      background: transparent;
+      background-size: contain;
       background-repeat: no-repeat;
+      background-position: center;
       position: relative;
       cursor: pointer;
       flex-shrink: 0;
-      transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), box-shadow 0.28s ease;
-      box-shadow:
-        3px 6px 16px rgba(0,0,0,0.26),
-        6px 18px 36px rgba(0,0,0,0.2),
-        0 3px 0 rgba(0,0,0,0.35),
-        2px 4px 0 rgba(0,0,0,0.25);
+      transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), filter 0.28s ease;
+      filter: drop-shadow(2px 6px 10px rgba(0,0,0,0.28)) drop-shadow(4px 14px 28px rgba(0,0,0,0.18));
       user-select: none;
       transform: translateY(var(--offset, 0px));
-      overflow: hidden;
     }
-    /* Assign real disk photos per panel */
-    .floppy[data-panel="about"]      { background-image: url('img/purpledisk.JPG'); }
-    .floppy[data-panel="work"]       { background-image: url('img/yellowdisk.JPG'); }
-    .floppy[data-panel="skills"]     { background-image: url('img/tealdisk.JPG'); }
-    .floppy[data-panel="experience"] { background-image: url('img/reddisk.JPG'); }
-    .floppy[data-panel="education"]  { background-image: url('img/bluedisk.JPG'); }
-    .floppy[data-panel="contact"]    { background-image: url('img/diskgreen.JPG'); }
-    .floppy::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(145deg,
-        rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 28%, transparent 55%);
-      pointer-events: none;
-      z-index: 14;
-    }
-    .floppy::after { display: none; } /* photo has real corner cut */
+    /* Per-panel real disk photos */
+    .floppy[data-panel="about"]      { background-image: url('img/purpledisk-removebg-preview.png'); }
+    .floppy[data-panel="work"]       { background-image: url('img/yellowdisk-removebg-preview.png'); }
+    .floppy[data-panel="skills"]     { background-image: url('img/tealdisk-removebg-preview.png'); }
+    .floppy[data-panel="experience"] { background-image: url('img/reddisk-removebg-preview.png'); }
+    .floppy[data-panel="education"]  { background-image: url('img/bluedisk-removebg-preview.png'); }
+    .floppy[data-panel="contact"]    { background-image: url('img/diskgreen-removebg-preview.png'); }
+
+    .floppy::before { display: none; }
+    .floppy::after  { display: none; }
+
     .floppy:hover {
       transform: translateY(calc(var(--offset, 0px) - 16px)) scale(1.05) rotateY(var(--tilt, -6deg));
-      box-shadow: 4px 24px 52px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.2);
+      filter: drop-shadow(4px 16px 32px rgba(0,0,0,0.34)) drop-shadow(2px 6px 12px rgba(0,0,0,0.22));
       z-index: 10;
     }
-    .floppy-notch { display: none; }
-    .floppy-hd    { display: none; }
+
+    /* Hide all CSS anatomy — photo provides these */
+    .floppy-notch        { display: none; }
+    .floppy-hd           { display: none; }
     .floppy-shutter-area { display: none; }
-    .floppy-shutter-plate {
-      position: absolute; inset: 0;
-      background: linear-gradient(170deg, #EBEBEB 0%, #D2D2D2 30%, #BABABA 60%, #D8D8D8 100%);
-      border-radius: 0 0 5px 5px;
-      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.25);
-    }
-    .floppy-shutter-plate::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, #F4F4F4, #E0E0E0, #F4F4F4);
-    }
-    .floppy-shutter-plate::after {
-      content: '';
-      position: absolute; top: 0; left: -3px; right: -3px; bottom: 0;
-      background: linear-gradient(90deg,
-        rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 3px,
-        transparent 3px, transparent calc(100% - 3px),
-        rgba(0,0,0,0.18) calc(100% - 3px));
-    }
-    .floppy-slot {
-      position: absolute;
-      top: 28%; left: 50%;
-      transform: translateX(-50%);
-      width: 52%; height: 44%;
-      background: linear-gradient(160deg, #1a1a1a, #0a0a0a);
-      border-radius: 2px;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.9);
-    }
-    .floppy-slot::after {
-      content: '';
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      width: 28%; height: 60%;
-      background: radial-gradient(ellipse at 40% 35%, rgba(180,160,100,0.35) 0%, transparent 100%);
-      border-radius: 50%;
-    }
+    .floppy-shutter-plate::before { display: none; }
+    .floppy-shutter-plate::after  { display: none; }
+    .floppy-slot         { display: none; }
+    .floppy-slot::after  { display: none; }
+
+    /* Transparent label — sits over photo's white label area */
     .floppy-label {
       position: absolute;
-      top: 36%; left: 6%; right: 6%; bottom: 2%;
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      border-radius: 4px;
+      top: 42%; left: 18%; right: 3%; bottom: 8%;
+      background: transparent;
+      border: none;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 0 8% 10%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 0 6% 8%;
     }
     .floppy-label::before { display: none; }
-    .floppy-lines { display: none; }
+    .floppy-label::after  { display: none; }
+
+    /* Ruled lines */
+    .floppy-lines { position: absolute; top: 8px; left: 6%; right: 6%; }
+    .floppy-lines span {
+      display: block; height: 1px;
+      background: rgba(0,0,0,0.10);
+      margin-bottom: calc(var(--w, 130px) * 0.038);
+    }
+    .floppy-lines span:last-child { width: 50%; }
+
     .floppy-section {
       font-family: 'Inter', sans-serif;
       font-size: calc(var(--w, 130px) * 0.051);
@@ -543,37 +511,36 @@
       flex-shrink: 0;
       width: var(--cw, 260px);
       height: var(--ch, 274px);
-      border-radius: 4px;
-      background-color: #f5f0e8;
-      background-image: var(--disk-img, url('img/purpledisk.JPG'));
-      background-size: 125%;
-      background-position: center;
-      background-repeat: no-repeat;
+      border-radius: 6px;
+      background: linear-gradient(155deg,
+        color-mix(in srgb, var(--clr, var(--teal)) 88%, white) 0%,
+        var(--clr, var(--teal)) 45%,
+        color-mix(in srgb, var(--clr, var(--teal)) 82%, black) 100%);
       box-shadow:
-        3px 6px 16px rgba(0,0,0,0.26),
-        6px 18px 36px rgba(0,0,0,0.2),
-        0 3px 0 rgba(0,0,0,0.35),
-        2px 5px 0 rgba(0,0,0,0.25);
+        3px 6px 16px rgba(0,0,0,0.22),
+        6px 18px 36px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
       transform: rotate(var(--rot,0deg)) perspective(700px) rotateY(var(--tilt,0deg)) translateY(var(--dy,0px));
       transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), box-shadow 0.28s, z-index 0s;
     }
-    #panel-work       .disk-cluster-item { --disk-img: url('img/yellowdisk.JPG'); }
-    #panel-skills     .disk-cluster-item { --disk-img: url('img/tealdisk.JPG'); }
-    #panel-experience .disk-cluster-item { --disk-img: url('img/reddisk.JPG'); }
-    #panel-education  .disk-cluster-item { --disk-img: url('img/bluedisk.JPG'); }
-    #panel-contact    .disk-cluster-item { --disk-img: url('img/diskgreen.JPG'); }
     .disk-cluster-item:hover {
       transform: rotate(var(--rot,0deg)) perspective(700px) rotateY(var(--tilt,0deg)) translateY(calc(var(--dy,0px) - 14px)) scale(1.06);
       box-shadow: 4px 24px 52px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.2);
       z-index: 50;
     }
     .disk-cluster-item::before {
-      content: ''; position: absolute; inset: 0; border-radius: 4px;
+      content: ''; position: absolute; inset: 0; border-radius: 6px;
       background: linear-gradient(145deg,
-        rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 30%, transparent 55%);
+        rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 30%, transparent 55%);
       pointer-events: none; z-index: 14;
     }
-    .disk-cluster-item::after { display: none; } /* photo has the real corner cut */
+    .disk-cluster-item::after {
+      content: ''; position: absolute; top: 0; right: 0;
+      width: 14px; height: 14px;
+      background: linear-gradient(225deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+      z-index: 15;
+    }
     .disk-cluster-item .disk-frame-label-body { padding: 10px 14px 6px; display: flex; flex-direction: column; overflow: hidden; }
     .disk-cluster-item .project-link,
     .disk-cluster-item .timeline-item .project-link { margin-top: auto; }
@@ -608,30 +575,41 @@
       position: relative;
       width: min(660px, calc(100vw - 40px));
       height: min(700px, calc(100vh - 108px));
-      border-radius: 4px;
-      background-color: #f5f0e8;
-      background-image: url('img/purpledisk.JPG');
-      background-size: 125%;
-      background-position: center;
-      background-repeat: no-repeat;
+      border-radius: 8px;
+      background: linear-gradient(155deg,
+        color-mix(in srgb, var(--panel-clr, var(--teal)) 88%, white) 0%,
+        var(--panel-clr, var(--teal)) 45%,
+        color-mix(in srgb, var(--panel-clr, var(--teal)) 82%, black) 100%);
       box-shadow:
         4px 8px 24px rgba(0,0,0,0.28),
         8px 28px 56px rgba(0,0,0,0.22),
-        0 6px 0 rgba(0,0,0,0.38),
-        3px 8px 0 rgba(0,0,0,0.28);
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
       flex-shrink: 0;
     }
     .disk-frame::before {
       content: '';
-      position: absolute; inset: 0; border-radius: 4px;
+      position: absolute; inset: 0; border-radius: 8px;
       background: linear-gradient(145deg,
-        rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 30%, transparent 55%);
+        rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.04) 30%, transparent 55%);
       pointer-events: none; z-index: 14;
     }
-    .disk-frame::after { display: none; }
-    .disk-frame-notch { display: none; }
+    .disk-frame::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 22px; height: 22px;
+      background: linear-gradient(225deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+      z-index: 15;
+    }
+    .disk-frame-notch {
+      position: absolute; top: 0; left: 11%;
+      width: 6%; height: 8%;
+      background: color-mix(in srgb, var(--panel-clr, var(--teal)) 50%, black);
+      border-radius: 0 0 5px 5px;
+      box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3); z-index: 10;
+    }
     .disk-frame-hd-label {
-      display: none;
+      position: absolute; top: 5%; right: 15%;
       font-family: 'Karla', sans-serif;
       font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
       color: rgba(255,255,255,0.45); z-index: 2;
@@ -643,23 +621,9 @@
     }
     .disk-frame-shutter-plate {
       position: absolute; inset: 0;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          transparent 0px, transparent 5px,
-          rgba(255,255,255,0.2) 5px, rgba(255,255,255,0.2) 6px
-        ),
-        linear-gradient(180deg,
-          #F2F2F2 0%, #E4E4E4 10%,
-          #C8C8C8 35%, #B0B0B0 55%,
-          #BEBEBE 72%, #D6D6D6 88%,
-          #ECECEC 100%);
+      background: linear-gradient(170deg, #EBEBEB 0%, #D2D2D2 30%, #BABABA 60%, #D8D8D8 100%);
       border-radius: 0 0 7px 7px;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.9),
-        inset 0 0 0 0.5px rgba(255,255,255,0.4),
-        0 1px 4px rgba(0,0,0,0.3),
-        0 3px 10px rgba(0,0,0,0.18);
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.5), 0 1px 4px rgba(0,0,0,0.25);
     }
     .disk-frame-shutter-plate::before {
       content: '';
@@ -681,31 +645,17 @@
       background: linear-gradient(160deg, #1a1a1a, #0a0a0a);
       border-radius: 2px;
       box-shadow: inset 0 2px 6px rgba(0,0,0,0.9);
-      overflow: visible;
-    }
-    .disk-frame-slot::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 40%; height: 65%;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at 38% 32%,
-        #484848 0%, #2c2c2c 38%, #141414 72%, #000 100%);
-      box-shadow:
-        0 0 6px rgba(255,255,255,0.04),
-        inset 0 1px 3px rgba(0,0,0,0.9);
     }
     .disk-frame-label {
       position: absolute;
-      top: 36%; left: 6%; right: 6%; bottom: 2%;
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border-radius: 6px;
+      top: 35%; left: 5%; right: 5%; bottom: 5%;
+      background: linear-gradient(180deg, #f7f2ea 0%, #f0ebe2 100%);
+      border-radius: 3px;
       display: flex; flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+      border-top: 6px solid;
+      border-image: linear-gradient(90deg, #C0C0C0, #E0E0E0, #C0C0C0) 1;
+      box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.07);
     }
     .disk-frame-label-header {
       padding: 7px 16px 6px; flex-shrink: 0;
@@ -730,7 +680,10 @@
       scrollbar-width: thin;
       scrollbar-color: var(--panel-clr, var(--teal)) transparent;
     }
-    .disk-frame-label-foot { display: none; }
+    .disk-frame-label-foot {
+      height: 44px; flex-shrink: 0;
+      background: color-mix(in srgb, var(--panel-clr, var(--teal)) 55%, #5c3a1a);
+    }
     .disk-about-photo-wrap {
       position: absolute;
       top: 50%; right: 14px; transform: translateY(-50%);
@@ -1332,10 +1285,6 @@
     const numEl    = document.getElementById('panelNum');
     const titleEl  = document.getElementById('panelTitle');
 
-    const diskStage = document.querySelector('.disk-stage');
-
-    const heroSection = document.querySelector('#hero');
-
     function openPanel(panelId) {
       document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
       document.getElementById('panel-' + panelId).classList.add('active');
@@ -1346,13 +1295,11 @@
       overlay.style.setProperty('--panel-clr', meta.clr);
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
-      heroSection.style.visibility = 'hidden';
     }
 
     function closePanel() {
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
-      heroSection.style.visibility = 'visible';
     }
 
     document.querySelectorAll('.floppy').forEach(disk => {
