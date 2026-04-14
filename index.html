@@ -103,68 +103,135 @@
     .floppy {
       width: var(--w, 130px);
       height: var(--h, 138px);
-      background: transparent;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+      border-radius: 6px;
+      background:
+        linear-gradient(155deg,
+          color-mix(in srgb, var(--clr) 88%, white) 0%,
+          var(--clr) 45%,
+          color-mix(in srgb, var(--clr) 82%, black) 100%);
       position: relative;
       cursor: pointer;
       flex-shrink: 0;
-      transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), filter 0.28s ease;
-      filter: drop-shadow(2px 6px 10px rgba(0,0,0,0.28)) drop-shadow(4px 14px 28px rgba(0,0,0,0.18));
+      transition: transform 0.28s cubic-bezier(.34,1.5,.64,1), box-shadow 0.28s ease;
+      box-shadow:
+        3px 6px 16px rgba(0,0,0,0.22),
+        6px 18px 36px rgba(0,0,0,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
       user-select: none;
       transform: translateY(var(--offset, 0px));
+      overflow: hidden;
     }
-    /* Per-panel real disk photos */
-    .floppy[data-panel="about"]      { background-image: url('img/purpledisk-removebg-preview.png'); }
-    .floppy[data-panel="work"]       { background-image: url('img/yellowdisk-removebg-preview.png'); }
-    .floppy[data-panel="skills"]     { background-image: url('img/tealdisk-removebg-preview.png'); }
-    .floppy[data-panel="experience"] { background-image: url('img/reddisk-removebg-preview.png'); }
-    .floppy[data-panel="education"]  { background-image: url('img/bluedisk-removebg-preview.png'); }
-    .floppy[data-panel="contact"]    { background-image: url('img/diskgreen-removebg-preview.png'); }
-
-    .floppy::before { display: none; }
-    .floppy::after  { display: none; }
-
+    .floppy::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg,
+        rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 28%, transparent 55%);
+      pointer-events: none;
+      z-index: 14;
+    }
+    .floppy::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 16px; height: 16px;
+      background: linear-gradient(225deg, rgba(0,0,0,0.35) 50%, transparent 50%);
+      z-index: 15;
+    }
     .floppy:hover {
       transform: translateY(calc(var(--offset, 0px) - 16px)) scale(1.05) rotateY(var(--tilt, -6deg));
-      filter: drop-shadow(4px 16px 32px rgba(0,0,0,0.34)) drop-shadow(2px 6px 12px rgba(0,0,0,0.22));
+      box-shadow: 4px 24px 52px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.2);
       z-index: 10;
     }
-
-    /* Hide all CSS anatomy — photo provides these */
-    .floppy-notch        { display: none; }
-    .floppy-hd           { display: none; }
-    .floppy-shutter-area { display: none; }
-    .floppy-shutter-plate::before { display: none; }
-    .floppy-shutter-plate::after  { display: none; }
-    .floppy-slot         { display: none; }
-    .floppy-slot::after  { display: none; }
-
-    /* Transparent label — sits over photo's white label area */
+    .floppy-notch {
+      position: absolute;
+      top: 0; left: 9%;
+      width: 9%; height: 11%;
+      background: color-mix(in srgb, var(--clr) 55%, black);
+      border-radius: 0 0 4px 4px;
+      box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3);
+    }
+    .floppy-hd {
+      position: absolute;
+      top: 6%; right: 18%;
+      font-family: 'Karla', sans-serif;
+      font-size: calc(var(--w, 130px) * 0.052);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.5);
+      z-index: 2;
+    }
+    .floppy-shutter-area {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 46%; height: 33%;
+    }
+    .floppy-shutter-plate {
+      position: absolute; inset: 0;
+      background: linear-gradient(170deg, #EBEBEB 0%, #D2D2D2 30%, #BABABA 60%, #D8D8D8 100%);
+      border-radius: 0 0 5px 5px;
+      box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .floppy-shutter-plate::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #F4F4F4, #E0E0E0, #F4F4F4);
+    }
+    .floppy-shutter-plate::after {
+      content: '';
+      position: absolute; top: 0; left: -3px; right: -3px; bottom: 0;
+      background: linear-gradient(90deg,
+        rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 3px,
+        transparent 3px, transparent calc(100% - 3px),
+        rgba(0,0,0,0.18) calc(100% - 3px));
+    }
+    .floppy-slot {
+      position: absolute;
+      top: 28%; left: 50%;
+      transform: translateX(-50%);
+      width: 52%; height: 44%;
+      background: linear-gradient(160deg, #1a1a1a, #0a0a0a);
+      border-radius: 2px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.9);
+    }
+    .floppy-slot::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 28%; height: 60%;
+      background: radial-gradient(ellipse at 40% 35%, rgba(180,160,100,0.35) 0%, transparent 100%);
+      border-radius: 50%;
+    }
     .floppy-label {
       position: absolute;
-      top: 42%; left: 18%; right: 3%; bottom: 8%;
-      background: transparent;
-      border: none;
+      top: 36%; left: 7%; right: 7%; bottom: 7%;
+      background: linear-gradient(180deg, #f7f2ea 0%, #f0ebe2 100%);
+      border-radius: 3px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 0 6% 8%;
+      padding: 0 10% 9%;
+      border-top: 5px solid;
+      border-image: linear-gradient(90deg, #B8B8B8, #DCDCDC, #B8B8B8) 1;
+      box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.06);
     }
-    .floppy-label::before { display: none; }
-    .floppy-label::after  { display: none; }
-
-    /* Ruled lines */
-    .floppy-lines { position: absolute; top: 8px; left: 6%; right: 6%; }
+    .floppy-label::before {
+      content: 'imation';
+      position: absolute; top: -3px; right: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: calc(var(--w, 130px) * 0.044);
+      font-weight: 400; letter-spacing: 0.12em;
+      color: rgba(80,60,40,0.45); line-height: 1; font-style: italic;
+    }
+    .floppy-lines { position: absolute; top: 10px; left: 10%; right: 10%; }
     .floppy-lines span {
       display: block; height: 1px;
-      background: rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.09);
       margin-bottom: calc(var(--w, 130px) * 0.038);
     }
     .floppy-lines span:last-child { width: 50%; }
-
     .floppy-section {
       font-family: 'Inter', sans-serif;
       font-size: calc(var(--w, 130px) * 0.051);
