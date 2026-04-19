@@ -97,6 +97,8 @@
       gap: 24px;
       position: relative;
       perspective: 900px;
+      padding: 20px 20px;
+      scroll-padding-left: 20px;
     }
 
     /* ─── Floppy Disk ─── */
@@ -224,6 +226,7 @@
       font-size: calc(var(--w, 130px) * 0.044);
       font-weight: 400; letter-spacing: 0.12em;
       color: rgba(80,60,40,0.45); line-height: 1; font-style: italic;
+      display: none;
     }
     .floppy-lines { position: absolute; top: 10px; left: 10%; right: 10%; }
     .floppy-lines span {
@@ -827,6 +830,109 @@
     /* No scroll on About / Contact disks */
     #panel-about .disk-frame-label-body,
     #panel-contact .disk-frame-label-body { overflow: hidden; }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 600px) {
+      /* Panel body — push disk toward top */
+      #panel .panel-body {
+        overflow: hidden !important;
+        align-items: flex-start !important;
+        padding-top: 16px !important;
+      }
+
+      /* Disk frame */
+      .disk-frame {
+        width: calc(100vw - 28px);
+        height: min(500px, calc(100vh - 120px));
+        border-radius: 6px;
+      }
+
+      /* Label area */
+      .disk-frame-label {
+        top: 34%; left: 4%; right: 4%; bottom: 6%;
+        display: flex; flex-direction: column;
+      }
+
+      .disk-frame-label-body {
+        padding: 8px 14px 6px;
+        overflow: hidden !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* About panel */
+      #panel-about .disk-frame-label-body {
+        padding-right: 14px !important;
+        overflow: hidden !important;
+      }
+      .about-intro-label { font-size: 9px; margin-bottom: 2px; flex-shrink: 0; }
+      .about-intro-name  { font-size: clamp(18px, 4.8vw, 22px); line-height: 1.0; margin-bottom: 5px; flex-shrink: 0; }
+      .about-bio         { font-size: 9px; line-height: 1.4; flex: 1; overflow-y: auto; scrollbar-width: none; }
+      .about-bio::-webkit-scrollbar { display: none; }
+      .about-resume-btn  { padding: 6px 14px; font-size: 9px; margin-top: 6px; flex-shrink: 0; }
+
+      /* Contact panel */
+      .contact-heading  { font-size: 15px; margin-bottom: 2px; }
+      .contact-subtitle { display: none; }
+      #panel-contact .form-group:has(textarea) { display: none; }
+      .contact-form-card { margin-bottom: 4px; padding: 8px 10px !important; }
+      .form-row  { gap: 5px; margin-bottom: 0; }
+      .form-group { margin-bottom: 4px; }
+      .form-group label { font-size: 8.5px; margin-bottom: 2px; display: block; }
+      .form-group input { font-size: 10px !important; padding: 6px 9px !important; }
+      .form-submit-wrap { margin-top: 4px; }
+      .form-btn { padding: 7px 20px; font-size: 9.5px; width: 100%; }
+      .contact-links { gap: 3px; margin-top: 4px; flex-wrap: wrap; }
+      .contact-link  { font-size: 8.5px; }
+      .contact-link-icon { width: 14px; height: 14px; font-size: 6.5px; }
+
+      /* Cluster panels — horizontal scroll */
+      #panel-work.active, #panel-skills.active,
+      #panel-experience.active, #panel-education.active {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: 20px;
+        scrollbar-width: none;
+        justify-content: flex-start;
+        align-items: flex-start;
+        align-content: flex-start;
+        height: 100%;
+        padding-top: 90px;
+        gap: 16px;
+      }
+
+      .disk-cluster-item {
+        flex-shrink: 0 !important;
+        width: 240px !important;
+        height: 300px !important;
+        transform: none !important;
+        scroll-snap-align: start;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+      }
+      .disk-cluster-item:first-child { margin-left: 20px; }
+      .disk-cluster-item:last-child  { margin-right: 20px; }
+      #panel-education .disk-cluster-item { height: 380px !important; }
+
+      /* Cluster disk label — allow inner scroll */
+      .disk-cluster-item .disk-frame-label {
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      .disk-cluster-item .disk-frame-label-body {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        scrollbar-width: none !important;
+      }
+      .disk-cluster-item .disk-frame-label-body::-webkit-scrollbar { display: none; }
+
+      .disk-frame-label-foot { height: 14px !important; }
+    }
   </style>
 </head>
 <body>
