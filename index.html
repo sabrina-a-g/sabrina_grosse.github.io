@@ -931,12 +931,16 @@
       /* Contact panel */
       .contact-heading  { font-size: 15px; margin-bottom: 2px; }
       .contact-subtitle { display: none; }
-      #panel-contact .form-group:has(textarea) { display: none; }
       .contact-form-card { margin-bottom: 4px; padding: 8px 10px !important; }
       .form-row  { gap: 5px; margin-bottom: 0; }
       .form-group { margin-bottom: 4px; }
       .form-group label { font-size: 8.5px; margin-bottom: 2px; display: block; }
       .form-group input { font-size: 10px !important; padding: 6px 9px !important; }
+      .form-group textarea { font-size: 10px !important; padding: 6px 9px !important; height: 48px !important; }
+      /* Contact panel — compact floppy graphic, full form space */
+      #panel-contact .disk-frame { height: min(590px, calc(100vh - 110px)); }
+      #panel-contact .disk-frame-shutter-area { height: 24%; }
+      #panel-contact .disk-frame-label { top: 28%; }
       .form-submit-wrap { margin-top: 4px; }
       .form-btn { padding: 7px 20px; font-size: 9.5px; width: 100%; }
       .contact-links { gap: 3px; margin-top: 4px; flex-wrap: wrap; }
@@ -947,14 +951,16 @@
       #panel-work .disk-frame-label-body,
       #panel-skills .disk-frame-label-body,
       #panel-experience .disk-frame-label-body,
-      #panel-education .disk-frame-label-body {
+      #panel-education .disk-frame-label-body,
+      #panel-contact .disk-frame-label-body {
         overflow-y: auto !important;
         scrollbar-width: none !important;
       }
       #panel-work .disk-frame-label-body::-webkit-scrollbar,
       #panel-skills .disk-frame-label-body::-webkit-scrollbar,
       #panel-experience .disk-frame-label-body::-webkit-scrollbar,
-      #panel-education .disk-frame-label-body::-webkit-scrollbar { display: none; }
+      #panel-education .disk-frame-label-body::-webkit-scrollbar,
+      #panel-contact .disk-frame-label-body::-webkit-scrollbar { display: none; }
 
       .disk-frame-label-foot { height: 14px !important; }
     }
