@@ -309,12 +309,6 @@
       display: flex;
       align-items: center; justify-content: center;
     }
-    /* Re-clip only the multi-disk panels */
-    #panel-work.active, #panel-skills.active,
-    #panel-experience.active, #panel-education.active {
-      overflow: hidden;
-    }
-
     .panel-content { display: none; }
     .panel-content.active { display: block; }
 
@@ -564,9 +558,10 @@
       font-size: 11px; flex-shrink: 0;
     }
     /* ─── DISK CLUSTER (multi-disk panels) ─── */
-    /* Cluster panels use flex-wrap so disks auto-center */
-    #panel-work.active, #panel-skills.active,
-    #panel-experience.active, #panel-education.active {
+    /* cluster-panel = scattered disks (tablet + desktop)
+       single-panel  = one centered disk (mobile only)    */
+    .single-panel { display: none; }
+    .cluster-panel {
       position: absolute; inset: 0;
       display: flex;
       flex-wrap: wrap;
@@ -574,7 +569,9 @@
       justify-content: center;
       gap: 40px 28px;
       padding: 24px 48px;
+      overflow: hidden;
     }
+
     .disk-cluster-item {
       --panel-clr: var(--clr, var(--teal));
       position: relative;
@@ -831,17 +828,64 @@
     #panel-about .disk-frame-label-body,
     #panel-contact .disk-frame-label-body { overflow: hidden; }
 
+    /* Content panels — scrollable label body */
+    #panel-work .disk-frame-label-body,
+    #panel-skills .disk-frame-label-body,
+    #panel-experience .disk-frame-label-body,
+    #panel-education .disk-frame-label-body {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--panel-clr, var(--teal)) transparent;
+    }
+
+    /* ─── Tablet (601px – 1050px) ─── */
+    @media (max-width: 1050px) and (min-width: 601px) {
+      /* Stage is 966px wide; below 1050px it clips — make it scroll instead */
+      .hero-stage-wrap { max-width: 100vw; }
+      .disk-stage {
+        width: 100%;
+        /* 340px is tall enough to contain all disks at their stagger offsets
+           (max bottom: Experience +72px offset, 167px tall → ~326px from top) */
+        height: 340px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        align-items: center;
+      }
+      .disk-stage::-webkit-scrollbar { display: none; }
+      .floppy { scroll-snap-align: center; }
+    }
+
     /* ─── Mobile ─── */
     @media (max-width: 600px) {
       /* Hero bottom text */
       .hero-hint { display: none; }
       .hero-sub { right: auto; left: 50%; transform: translateX(-50%); }
 
-      /* Panel body — push disk toward top */
+      /* Hero disk stage — scrollable carousel */
+      .hero-stage-wrap { max-width: 100vw; }
+      .disk-stage {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        padding: 24px 16px;
+        align-items: center;
+      }
+      .disk-stage::-webkit-scrollbar { display: none; }
+      /* Reset vertical offsets — use higher specificity so inline --offset is bypassed */
+      .disk-stage .floppy:not(.inserting) { transform: translateY(0px); }
+      .floppy { scroll-snap-align: center; }
+
+      /* Panel body — center disk on screen */
       #panel .panel-body {
         overflow: hidden !important;
-        align-items: flex-start !important;
-        padding-top: 16px !important;
+        align-items: center !important;
+        padding-top: 0 !important;
       }
 
       /* Disk frame */
@@ -876,6 +920,14 @@
       .about-bio::-webkit-scrollbar { display: none; }
       .about-resume-btn  { padding: 6px 14px; font-size: 9px; margin-top: 6px; flex-shrink: 0; }
 
+      /* Switch cluster panels → single disk on mobile */
+      .cluster-panel { display: none; }
+      .single-panel  { display: block; }
+
+      /* Hide photo on mobile — it covers the bio text */
+      .disk-about-photo-wrap { display: none !important; }
+      #panel-about .disk-frame-label-body { padding-right: 14px !important; }
+
       /* Contact panel */
       .contact-heading  { font-size: 15px; margin-bottom: 2px; }
       .contact-subtitle { display: none; }
@@ -891,49 +943,18 @@
       .contact-link  { font-size: 8.5px; }
       .contact-link-icon { width: 14px; height: 14px; font-size: 6.5px; }
 
-      /* Cluster panels — horizontal scroll */
-      #panel-work.active, #panel-skills.active,
-      #panel-experience.active, #panel-education.active {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        scroll-padding-left: 20px;
-        scrollbar-width: none;
-        justify-content: flex-start;
-        align-items: flex-start;
-        align-content: flex-start;
-        height: 100%;
-        padding-top: 90px;
-        gap: 16px;
-      }
-
-      .disk-cluster-item {
-        flex-shrink: 0 !important;
-        width: 240px !important;
-        height: 300px !important;
-        transform: none !important;
-        scroll-snap-align: start;
-        border-radius: 8px !important;
-        overflow: hidden !important;
-      }
-      .disk-cluster-item:first-child { margin-left: 20px; }
-      .disk-cluster-item:last-child  { margin-right: 20px; }
-      #panel-education .disk-cluster-item { height: 380px !important; }
-
-      /* Cluster disk label — allow inner scroll */
-      .disk-cluster-item .disk-frame-label {
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-      }
-      .disk-cluster-item .disk-frame-label-body {
-        flex: 1 !important;
+      /* Content panels — allow scroll inside disk label on mobile */
+      #panel-work .disk-frame-label-body,
+      #panel-skills .disk-frame-label-body,
+      #panel-experience .disk-frame-label-body,
+      #panel-education .disk-frame-label-body {
         overflow-y: auto !important;
         scrollbar-width: none !important;
       }
-      .disk-cluster-item .disk-frame-label-body::-webkit-scrollbar { display: none; }
+      #panel-work .disk-frame-label-body::-webkit-scrollbar,
+      #panel-skills .disk-frame-label-body::-webkit-scrollbar,
+      #panel-experience .disk-frame-label-body::-webkit-scrollbar,
+      #panel-education .disk-frame-label-body::-webkit-scrollbar { display: none; }
 
       .disk-frame-label-foot { height: 14px !important; }
     }
@@ -1056,326 +1077,604 @@
       <!-- Work -->
       <div class="panel-content" id="panel-work">
 
-        <div class="disk-cluster-item" style="--clr:var(--rust);--cw:272px;--ch:318px;--rot:-3deg;--tilt:-4deg;--dy:-6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+        <!-- Tablet / Desktop: scattered cluster disks -->
+        <div class="cluster-panel">
+
+          <div class="disk-cluster-item" style="--clr:var(--rust);--cw:272px;--ch:318px;--rot:-3deg;--tilt:-4deg;--dy:-6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">WordPress · UX · 2026</span></div>
+              <div class="disk-frame-label-body">
+                <h3 class="project-title">Puttshack Website Redesign</h3>
+                <ul class="project-desc">
+                  <li>Full redesign of the WordPress site</li>
+                  <li>Built components with HTML and CSS</li>
+                  <li>Collaborated across US and UK teams</li>
+                  <li>Performance optimization and improvements</li>
+                </ul>
+                <a href="https://www.puttshack.com/" class="project-link" target="_blank">View Site →</a>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--purple);--cw:272px;--ch:318px;--rot:2deg;--tilt:3deg;--dy:6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Content · Digital</span></div>
+              <div class="disk-frame-label-body">
+                <h3 class="project-title">Content &amp; Digital Projects</h3>
+                <ul class="project-desc">
+                  <li>Portfolio of digital and web-based projects</li>
+                  <li>UGC content for multiple brands</li>
+                  <li>Social graphics and digital assets</li>
+                  <li>Short-form content for social platforms</li>
+                </ul>
+                <a href="https://canva.link/nbo6mtjuq086p07" class="project-link" target="_blank">View Portfolio →</a>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--teal);--cw:272px;--ch:318px;--rot:-1.5deg;--tilt:-3deg;--dy:-4px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">DevOps · 2022–2026</span></div>
+              <div class="disk-frame-label-body">
+                <h3 class="project-title">EKS Infrastructure &amp; CI/CD</h3>
+                <ul class="project-desc">
+                  <li>Infrastructure and deployments via AWS EKS</li>
+                  <li>Improved release processes for dev teams</li>
+                  <li>CI/CD via GitHub and Octopus Deploy</li>
+                </ul>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--navy);--cw:272px;--ch:318px;--rot:2.5deg;--tilt:4deg;--dy:4px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Operations · 2015–2019</span></div>
+              <div class="disk-frame-label-body">
+                <h3 class="project-title">Project EDGE — Kroger R&amp;D</h3>
+                <ul class="project-desc">
+                  <li>Technical support for 100+ Kroger stores</li>
+                  <li>Led digital content distribution team</li>
+                  <li>Analyzed data and prioritized solutions</li>
+                </ul>
+                <a href="https://futurestores.wbresearch.com/blog/kroger-rolls-out-edge-clean-energy-cloud-based-signature-solution-strategy-for-retail-shelves" class="project-link" target="_blank">Learn More →</a>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+        </div><!-- /.cluster-panel -->
+
+        <!-- Mobile: single centered disk -->
+        <div class="single-panel">
+        <div class="disk-frame">
+          <div class="disk-frame-notch"></div>
+          <span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area">
+            <div class="disk-frame-shutter-plate"></div>
+            <div class="disk-frame-slot"></div>
+          </div>
           <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">WordPress · UX · 2026</span></div>
+            <div class="disk-frame-label-header">
+              <span class="disk-frame-index-text">02 — Work</span>
+            </div>
             <div class="disk-frame-label-body">
-              <h3 class="project-title">Puttshack Website Redesign</h3>
-              <ul class="project-desc">
-                <li>Full redesign of the WordPress site</li>
-                <li>Built components with HTML and CSS</li>
-                <li>Collaborated across US and UK teams</li>
-                <li>Performance optimization and improvements</li>
-              </ul>
-              <a href="https://www.puttshack.com/" class="project-link" target="_blank">View Site →</a>
+              <div class="projects-grid">
+
+                <div class="project-card">
+                  <div class="project-spine" style="background:var(--rust)"></div>
+                  <div class="project-card-body">
+                    <p class="project-tag">WordPress · UX · 2026</p>
+                    <h3 class="project-title">Puttshack Website Redesign</h3>
+                    <ul class="project-desc">
+                      <li>Full redesign of the WordPress site</li>
+                      <li>Built components with HTML and CSS</li>
+                      <li>Collaborated across US and UK teams</li>
+                      <li>Performance optimization and improvements</li>
+                    </ul>
+                    <a href="https://www.puttshack.com/" class="project-link" target="_blank">View Site →</a>
+                  </div>
+                </div>
+
+                <div class="project-card">
+                  <div class="project-spine" style="background:var(--purple)"></div>
+                  <div class="project-card-body">
+                    <p class="project-tag">Content · Digital</p>
+                    <h3 class="project-title">Content &amp; Digital Projects</h3>
+                    <ul class="project-desc">
+                      <li>Portfolio of digital and web-based projects</li>
+                      <li>UGC content for multiple brands</li>
+                      <li>Social graphics and digital assets</li>
+                      <li>Short-form content for social platforms</li>
+                    </ul>
+                    <a href="https://canva.link/nbo6mtjuq086p07" class="project-link" target="_blank">View Portfolio →</a>
+                  </div>
+                </div>
+
+                <div class="project-card">
+                  <div class="project-spine" style="background:var(--teal)"></div>
+                  <div class="project-card-body">
+                    <p class="project-tag">DevOps · 2022–2026</p>
+                    <h3 class="project-title">EKS Infrastructure &amp; CI/CD</h3>
+                    <ul class="project-desc">
+                      <li>Infrastructure and deployments via AWS EKS</li>
+                      <li>Improved release processes for dev teams</li>
+                      <li>CI/CD via GitHub and Octopus Deploy</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="project-card">
+                  <div class="project-spine" style="background:var(--navy)"></div>
+                  <div class="project-card-body">
+                    <p class="project-tag">Operations · 2015–2019</p>
+                    <h3 class="project-title">Project EDGE — Kroger R&amp;D</h3>
+                    <ul class="project-desc">
+                      <li>Technical support for 100+ Kroger stores</li>
+                      <li>Led digital content distribution team</li>
+                      <li>Analyzed data and prioritized solutions</li>
+                    </ul>
+                    <a href="https://futurestores.wbresearch.com/blog/kroger-rolls-out-edge-clean-energy-cloud-based-signature-solution-strategy-for-retail-shelves" class="project-link" target="_blank">Learn More →</a>
+                  </div>
+                </div>
+
+              </div>
             </div>
             <div class="disk-frame-label-foot"></div>
           </div>
         </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--purple);--cw:272px;--ch:318px;--rot:2deg;--tilt:3deg;--dy:6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Content · Digital</span></div>
-            <div class="disk-frame-label-body">
-              <h3 class="project-title">Content &amp; Digital Projects</h3>
-              <ul class="project-desc">
-                <li>Portfolio of digital and web-based projects</li>
-                <li>UGC content for multiple brands</li>
-                <li>Social graphics and digital assets</li>
-                <li>Short-form content for social platforms</li>
-              </ul>
-              <a href="https://canva.link/nbo6mtjuq086p07" class="project-link" target="_blank">View Portfolio →</a>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:272px;--ch:318px;--rot:-1.5deg;--tilt:-3deg;--dy:-4px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">DevOps · 2022–2026</span></div>
-            <div class="disk-frame-label-body">
-              <h3 class="project-title">EKS Infrastructure &amp; CI/CD</h3>
-              <ul class="project-desc">
-                <li>Infrastructure and deployments via AWS EKS</li>
-                <li>Improved release processes for dev teams</li>
-                <li>CI/CD via GitHub and Octopus Deploy</li>
-              </ul>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:272px;--ch:318px;--rot:2.5deg;--tilt:4deg;--dy:4px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Operations · 2015–2019</span></div>
-            <div class="disk-frame-label-body">
-              <h3 class="project-title">Project EDGE — Kroger R&amp;D</h3>
-              <ul class="project-desc">
-                <li>Technical support for 100+ Kroger stores</li>
-                <li>Led digital content distribution team</li>
-                <li>Analyzed data and prioritized solutions</li>
-              </ul>
-              <a href="https://futurestores.wbresearch.com/blog/kroger-rolls-out-edge-clean-energy-cloud-based-signature-solution-strategy-for-retail-shelves" class="project-link" target="_blank">Learn More →</a>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
+        </div><!-- /.single-panel -->
       </div>
 
       <!-- Skills -->
       <div class="panel-content" id="panel-skills">
 
-        <div class="disk-cluster-item" style="--clr:var(--gold);--cw:296px;--ch:312px;--rot:-2.5deg;--tilt:-3deg;--dy:-6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Frontend</span></div>
-            <div class="disk-frame-label-body">
-              <div class="skills-full-card">
-                <div class="skills-full-card-tags">
+        <!-- Tablet / Desktop: scattered cluster disks -->
+        <div class="cluster-panel">
+
+          <div class="disk-cluster-item" style="--clr:var(--gold);--cw:296px;--ch:312px;--rot:-2.5deg;--tilt:-3deg;--dy:-6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Frontend</span></div>
+              <div class="disk-frame-label-body">
+                <div class="skills-full-card"><div class="skills-full-card-tags">
                   <span>HTML</span><span>CSS</span><span>JavaScript</span>
                   <span>WordPress</span><span>PHP</span><span>Responsive Design</span>
-                </div>
+                </div></div>
               </div>
+              <div class="disk-frame-label-foot"></div>
             </div>
-            <div class="disk-frame-label-foot"></div>
           </div>
-        </div>
 
-        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:296px;--ch:312px;--rot:1.5deg;--tilt:2deg;--dy:6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">DevOps</span></div>
-            <div class="disk-frame-label-body">
-              <div class="skills-full-card">
-                <div class="skills-full-card-tags">
+          <div class="disk-cluster-item" style="--clr:var(--teal);--cw:296px;--ch:312px;--rot:1.5deg;--tilt:2deg;--dy:6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">DevOps</span></div>
+              <div class="disk-frame-label-body">
+                <div class="skills-full-card"><div class="skills-full-card-tags">
                   <span>Kubernetes</span><span>AWS EKS</span><span>CI/CD</span>
                   <span>GitHub Actions</span><span>Octopus Deploy</span><span>Datadog</span>
-                </div>
+                </div></div>
               </div>
+              <div class="disk-frame-label-foot"></div>
             </div>
-            <div class="disk-frame-label-foot"></div>
           </div>
-        </div>
 
-        <div class="disk-cluster-item" style="--clr:var(--purple);--cw:296px;--ch:312px;--rot:-1deg;--tilt:-2deg;--dy:-4px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Design</span></div>
-            <div class="disk-frame-label-body">
-              <div class="skills-full-card">
-                <div class="skills-full-card-tags">
+          <div class="disk-cluster-item" style="--clr:var(--purple);--cw:296px;--ch:312px;--rot:-1deg;--tilt:-2deg;--dy:-4px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Design</span></div>
+              <div class="disk-frame-label-body">
+                <div class="skills-full-card"><div class="skills-full-card-tags">
                   <span>Figma</span><span>Canva</span><span>UX</span><span>Digital Assets</span>
-                </div>
+                </div></div>
               </div>
+              <div class="disk-frame-label-foot"></div>
             </div>
-            <div class="disk-frame-label-foot"></div>
           </div>
-        </div>
 
-        <div class="disk-cluster-item" style="--clr:var(--rust);--cw:296px;--ch:312px;--rot:2deg;--tilt:3deg;--dy:6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Tools</span></div>
-            <div class="disk-frame-label-body">
-              <div class="skills-full-card">
-                <div class="skills-full-card-tags">
+          <div class="disk-cluster-item" style="--clr:var(--rust);--cw:296px;--ch:312px;--rot:2deg;--tilt:3deg;--dy:6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Tools</span></div>
+              <div class="disk-frame-label-body">
+                <div class="skills-full-card"><div class="skills-full-card-tags">
                   <span>VS Code</span><span>GitHub</span><span>Jira</span><span>Notion</span>
-                </div>
+                </div></div>
               </div>
+              <div class="disk-frame-label-foot"></div>
             </div>
-            <div class="disk-frame-label-foot"></div>
           </div>
-        </div>
 
-        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:296px;--ch:312px;--rot:-2deg;--tilt:-4deg;--dy:-4px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Content</span></div>
-            <div class="disk-frame-label-body">
-              <div class="skills-full-card">
-                <div class="skills-full-card-tags">
+          <div class="disk-cluster-item" style="--clr:var(--navy);--cw:296px;--ch:312px;--rot:-2deg;--tilt:-4deg;--dy:-4px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Content</span></div>
+              <div class="disk-frame-label-body">
+                <div class="skills-full-card"><div class="skills-full-card-tags">
                   <span>UGC</span><span>Social Media</span><span>Short-form Video</span><span>Copywriting</span>
-                </div>
+                </div></div>
               </div>
+              <div class="disk-frame-label-foot"></div>
             </div>
-            <div class="disk-frame-label-foot"></div>
           </div>
-        </div>
 
-        <div class="disk-cluster-item" style="--clr:var(--dark-green);--cw:296px;--ch:312px;--rot:1deg;--tilt:2deg;--dy:4px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Soft Skills</span></div>
-            <div class="disk-frame-label-body">
-              <div class="skills-full-card">
-                <div class="skills-full-card-tags">
+          <div class="disk-cluster-item" style="--clr:var(--dark-green);--cw:296px;--ch:312px;--rot:1deg;--tilt:2deg;--dy:4px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Soft Skills</span></div>
+              <div class="disk-frame-label-body">
+                <div class="skills-full-card"><div class="skills-full-card-tags">
                   <span>Cross-team Collab</span><span>Problem Solving</span>
                   <span>Project Management</span><span>QA Testing</span>
+                </div></div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+        </div><!-- /.cluster-panel -->
+
+        <!-- Mobile: single centered disk -->
+        <div class="single-panel">
+        <div class="disk-frame">
+          <div class="disk-frame-notch"></div>
+          <span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area">
+            <div class="disk-frame-shutter-plate"></div>
+            <div class="disk-frame-slot"></div>
+          </div>
+          <div class="disk-frame-label">
+            <div class="disk-frame-label-header">
+              <span class="disk-frame-index-text">03 — Skills</span>
+            </div>
+            <div class="disk-frame-label-body">
+              <div class="skills-full-grid">
+
+                <div class="skills-full-card">
+                  <p class="skills-full-card-label">Frontend</p>
+                  <div class="skills-full-card-tags">
+                    <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                    <span>WordPress</span><span>PHP</span><span>Responsive Design</span>
+                  </div>
                 </div>
+
+                <div class="skills-full-card">
+                  <p class="skills-full-card-label">DevOps</p>
+                  <div class="skills-full-card-tags">
+                    <span>Kubernetes</span><span>AWS EKS</span><span>CI/CD</span>
+                    <span>GitHub Actions</span><span>Octopus Deploy</span><span>Datadog</span>
+                  </div>
+                </div>
+
+                <div class="skills-full-card">
+                  <p class="skills-full-card-label">Design</p>
+                  <div class="skills-full-card-tags">
+                    <span>Figma</span><span>Canva</span><span>UX</span><span>Digital Assets</span>
+                  </div>
+                </div>
+
+                <div class="skills-full-card">
+                  <p class="skills-full-card-label">Tools</p>
+                  <div class="skills-full-card-tags">
+                    <span>VS Code</span><span>GitHub</span><span>Jira</span><span>Notion</span>
+                  </div>
+                </div>
+
+                <div class="skills-full-card">
+                  <p class="skills-full-card-label">Content</p>
+                  <div class="skills-full-card-tags">
+                    <span>UGC</span><span>Social Media</span><span>Short-form Video</span><span>Copywriting</span>
+                  </div>
+                </div>
+
+                <div class="skills-full-card">
+                  <p class="skills-full-card-label">Soft Skills</p>
+                  <div class="skills-full-card-tags">
+                    <span>Cross-team Collab</span><span>Problem Solving</span>
+                    <span>Project Management</span><span>QA Testing</span>
+                  </div>
+                </div>
+
               </div>
             </div>
             <div class="disk-frame-label-foot"></div>
           </div>
         </div>
-
+        </div><!-- /.single-panel -->
       </div>
 
       <!-- Experience -->
       <div class="panel-content" id="panel-experience">
 
-        <div class="disk-cluster-item" style="--clr:var(--rust);--cw:300px;--ch:316px;--rot:-2.5deg;--tilt:-3deg;--dy:-6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+        <!-- Tablet / Desktop: scattered cluster disks -->
+        <div class="cluster-panel">
+
+          <div class="disk-cluster-item" style="--clr:var(--rust);--cw:300px;--ch:316px;--rot:-2.5deg;--tilt:-3deg;--dy:-6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Jan 2026 — Present</span></div>
+              <div class="disk-frame-label-body">
+                <div class="timeline-item">
+                  <p class="timeline-role">Web Developer</p>
+                  <p class="timeline-company">Puttshack Inc.</p>
+                  <ul class="timeline-bullets">
+                    <li>WordPress site redesign</li>
+                    <li>HTML/CSS component development</li>
+                    <li>US &amp; UK cross-team collaboration</li>
+                    <li>Performance optimization</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--teal);--cw:300px;--ch:316px;--rot:1.5deg;--tilt:2deg;--dy:6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Mar 2022 — Jan 2026</span></div>
+              <div class="disk-frame-label-body">
+                <div class="timeline-item">
+                  <p class="timeline-role">DevOps Engineer</p>
+                  <p class="timeline-company">Puttshack Inc.</p>
+                  <ul class="timeline-bullets">
+                    <li>Infrastructure via AWS EKS</li>
+                    <li>Improved CI/CD pipelines</li>
+                    <li>Website infra and development</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--gold);--cw:300px;--ch:316px;--rot:-1deg;--tilt:-2deg;--dy:-8px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Aug 2020 — Feb 2022</span></div>
+              <div class="disk-frame-label-body">
+                <div class="timeline-item">
+                  <p class="timeline-role">Process Manager</p>
+                  <p class="timeline-company">P.L. Marketing</p>
+                  <ul class="timeline-bullets">
+                    <li>Directed multi-team project implementation</li>
+                    <li>QA testing for features and enhancements</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--navy);--cw:300px;--ch:316px;--rot:2deg;--tilt:3deg;--dy:6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Jun 2019 — Aug 2020</span></div>
+              <div class="disk-frame-label-body">
+                <div class="timeline-item">
+                  <p class="timeline-role">Floor Planning Analyst</p>
+                  <p class="timeline-company">P.L. Marketing</p>
+                  <ul class="timeline-bullets">
+                    <li>Floor planning analyst for LAMCOE</li>
+                    <li>Mastered JDA; assisted in testing</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--dark-green);--cw:300px;--ch:316px;--rot:-1deg;--tilt:-3deg;--dy:-6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Oct 2015 — Jan 2019</span></div>
+              <div class="disk-frame-label-body">
+                <div class="timeline-item">
+                  <p class="timeline-role">Operations / Technical Analyst</p>
+                  <p class="timeline-company">Ascendum — Kroger R&amp;D</p>
+                  <ul class="timeline-bullets">
+                    <li>Support for 100+ Kroger stores</li>
+                    <li>Led digital content distribution</li>
+                    <li>Data analysis and prioritization</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+        </div><!-- /.cluster-panel -->
+
+        <!-- Mobile: single centered disk -->
+        <div class="single-panel">
+        <div class="disk-frame">
+          <div class="disk-frame-notch"></div>
+          <span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area">
+            <div class="disk-frame-shutter-plate"></div>
+            <div class="disk-frame-slot"></div>
+          </div>
           <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Jan 2026 — Present</span></div>
+            <div class="disk-frame-label-header">
+              <span class="disk-frame-index-text">04 — Experience</span>
+            </div>
             <div class="disk-frame-label-body">
-              <div class="timeline-item">
-                <p class="timeline-role">Web Developer</p>
-                <p class="timeline-company">Puttshack Inc.</p>
-                <ul class="timeline-bullets">
-                  <li>WordPress site redesign</li>
-                  <li>HTML/CSS component development</li>
-                  <li>US &amp; UK cross-team collaboration</li>
-                  <li>Performance optimization</li>
-                </ul>
+              <div class="timeline">
+
+                <div class="timeline-item">
+                  <div class="timeline-date">Jan 2026<br>Present</div>
+                  <div>
+                    <p class="timeline-role">Web Developer</p>
+                    <p class="timeline-company">Puttshack Inc.</p>
+                    <ul class="timeline-bullets">
+                      <li>WordPress site redesign</li>
+                      <li>HTML/CSS component development</li>
+                      <li>US &amp; UK cross-team collaboration</li>
+                      <li>Performance optimization</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-date">Mar 2022<br>Jan 2026</div>
+                  <div>
+                    <p class="timeline-role">DevOps Engineer</p>
+                    <p class="timeline-company">Puttshack Inc.</p>
+                    <ul class="timeline-bullets">
+                      <li>Infrastructure via AWS EKS</li>
+                      <li>Improved CI/CD pipelines</li>
+                      <li>Website infra and development</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-date">Aug 2020<br>Feb 2022</div>
+                  <div>
+                    <p class="timeline-role">Process Manager</p>
+                    <p class="timeline-company">P.L. Marketing</p>
+                    <ul class="timeline-bullets">
+                      <li>Directed multi-team project implementation</li>
+                      <li>QA testing for features and enhancements</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-date">Jun 2019<br>Aug 2020</div>
+                  <div>
+                    <p class="timeline-role">Floor Planning Analyst</p>
+                    <p class="timeline-company">P.L. Marketing</p>
+                    <ul class="timeline-bullets">
+                      <li>Floor planning analyst for LAMCOE</li>
+                      <li>Mastered JDA; assisted in testing</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-date">Oct 2015<br>Jan 2019</div>
+                  <div>
+                    <p class="timeline-role">Operations / Technical Analyst</p>
+                    <p class="timeline-company">Ascendum — Kroger R&amp;D</p>
+                    <ul class="timeline-bullets">
+                      <li>Support for 100+ Kroger stores</li>
+                      <li>Led digital content distribution</li>
+                      <li>Data analysis and prioritization</li>
+                    </ul>
+                  </div>
+                </div>
+
               </div>
             </div>
             <div class="disk-frame-label-foot"></div>
           </div>
         </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:300px;--ch:316px;--rot:1.5deg;--tilt:2deg;--dy:6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Mar 2022 — Jan 2026</span></div>
-            <div class="disk-frame-label-body">
-              <div class="timeline-item">
-                <p class="timeline-role">DevOps Engineer</p>
-                <p class="timeline-company">Puttshack Inc.</p>
-                <ul class="timeline-bullets">
-                  <li>Infrastructure via AWS EKS</li>
-                  <li>Improved CI/CD pipelines</li>
-                  <li>Website infra and development</li>
-                </ul>
-              </div>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--gold);--cw:300px;--ch:316px;--rot:-1deg;--tilt:-2deg;--dy:-8px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Aug 2020 — Feb 2022</span></div>
-            <div class="disk-frame-label-body">
-              <div class="timeline-item">
-                <p class="timeline-role">Process Manager</p>
-                <p class="timeline-company">P.L. Marketing</p>
-                <ul class="timeline-bullets">
-                  <li>Directed multi-team project implementation</li>
-                  <li>QA testing for features and enhancements</li>
-                </ul>
-              </div>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:300px;--ch:316px;--rot:2deg;--tilt:3deg;--dy:6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Jun 2019 — Aug 2020</span></div>
-            <div class="disk-frame-label-body">
-              <div class="timeline-item">
-                <p class="timeline-role">Floor Planning Analyst</p>
-                <p class="timeline-company">P.L. Marketing</p>
-                <ul class="timeline-bullets">
-                  <li>Floor planning analyst for LAMCOE</li>
-                  <li>Mastered JDA; assisted in testing</li>
-                </ul>
-              </div>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--dark-green);--cw:300px;--ch:316px;--rot:-1deg;--tilt:-3deg;--dy:-6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Oct 2015 — Jan 2019</span></div>
-            <div class="disk-frame-label-body">
-              <div class="timeline-item">
-                <p class="timeline-role">Operations / Technical Analyst</p>
-                <p class="timeline-company">Ascendum — Kroger R&amp;D</p>
-                <ul class="timeline-bullets">
-                  <li>Support for 100+ Kroger stores</li>
-                  <li>Led digital content distribution</li>
-                  <li>Data analysis and prioritization</li>
-                </ul>
-              </div>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
+        </div><!-- /.single-panel -->
       </div>
 
       <!-- Education -->
       <div class="panel-content" id="panel-education">
 
-        <div class="disk-cluster-item" style="--clr:var(--navy);--cw:380px;--ch:402px;--rot:-2deg;--tilt:-4deg;--dy:-6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+        <!-- Tablet / Desktop: scattered cluster disks -->
+        <div class="cluster-panel">
+
+          <div class="disk-cluster-item" style="--clr:var(--navy);--cw:380px;--ch:402px;--rot:-2deg;--tilt:-4deg;--dy:-6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Degree</span></div>
+              <div class="disk-frame-label-body">
+                <div class="edu-card">
+                  <p class="edu-card-school">University of Cincinnati</p>
+                  <p class="edu-card-degree">Information Technology, B.S.</p>
+                  <p class="edu-card-date">Aug 2015 — May 2019</p>
+                  <p class="edu-card-desc">Earned a B.S. in Information Technology while working full-time — demonstrating strong time management and the ability to apply classroom concepts directly to real-world problems.</p>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+          <div class="disk-cluster-item" style="--clr:var(--teal);--cw:380px;--ch:402px;--rot:2deg;--tilt:4deg;--dy:6px;">
+            <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
+            <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
+            <div class="disk-frame-label">
+              <div class="disk-frame-label-header"><span class="disk-frame-index-text">Certification</span></div>
+              <div class="disk-frame-label-body">
+                <div class="edu-card">
+                  <p class="edu-card-school">CKA</p>
+                  <p class="edu-card-degree">Certified Kubernetes Administrator</p>
+                  <p class="edu-card-date">Expires June 2026</p>
+                  <p class="edu-card-desc">Demonstrates proficiency in Kubernetes administration including cluster management, deployment strategies, and troubleshooting at scale.</p>
+                </div>
+              </div>
+              <div class="disk-frame-label-foot"></div>
+            </div>
+          </div>
+
+        </div><!-- /.cluster-panel -->
+
+        <!-- Mobile: single centered disk -->
+        <div class="single-panel">
+        <div class="disk-frame">
+          <div class="disk-frame-notch"></div>
+          <span class="disk-frame-hd-label">HD</span>
+          <div class="disk-frame-shutter-area">
+            <div class="disk-frame-shutter-plate"></div>
+            <div class="disk-frame-slot"></div>
+          </div>
           <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Degree</span></div>
+            <div class="disk-frame-label-header">
+              <span class="disk-frame-index-text">05 — Education</span>
+            </div>
             <div class="disk-frame-label-body">
-              <div class="edu-card">
-                <p class="edu-card-school">University of Cincinnati</p>
-                <p class="edu-card-degree">Information Technology, B.S.</p>
-                <p class="edu-card-date">Aug 2015 — May 2019</p>
-                <p class="edu-card-desc">Earned a B.S. in Information Technology while working full-time — demonstrating strong time management and the ability to apply classroom concepts directly to real-world problems.</p>
+              <div class="edu-grid">
+
+                <div class="edu-card">
+                  <p class="edu-card-label">Degree</p>
+                  <p class="edu-card-school">University of Cincinnati</p>
+                  <p class="edu-card-degree">Information Technology, B.S.</p>
+                  <p class="edu-card-date">Aug 2015 — May 2019</p>
+                  <p class="edu-card-desc">Earned a B.S. in Information Technology while working full-time — demonstrating strong time management and the ability to apply classroom concepts directly to real-world problems.</p>
+                </div>
+
+                <div class="edu-card">
+                  <p class="edu-card-label">Certification</p>
+                  <p class="edu-card-school">CKA</p>
+                  <p class="edu-card-degree">Certified Kubernetes Administrator</p>
+                  <p class="edu-card-date">Expires June 2026</p>
+                  <p class="edu-card-desc">Demonstrates proficiency in Kubernetes administration including cluster management, deployment strategies, and troubleshooting at scale.</p>
+                </div>
+
               </div>
             </div>
             <div class="disk-frame-label-foot"></div>
           </div>
         </div>
-
-        <div class="disk-cluster-item" style="--clr:var(--teal);--cw:380px;--ch:402px;--rot:2deg;--tilt:4deg;--dy:6px;">
-          <div class="disk-frame-notch"></div><span class="disk-frame-hd-label">HD</span>
-          <div class="disk-frame-shutter-area"><div class="disk-frame-shutter-plate"></div><div class="disk-frame-slot"></div></div>
-          <div class="disk-frame-label">
-            <div class="disk-frame-label-header"><span class="disk-frame-index-text">Certification</span></div>
-            <div class="disk-frame-label-body">
-              <div class="edu-card">
-                <p class="edu-card-school">CKA</p>
-                <p class="edu-card-degree">Certified Kubernetes Administrator</p>
-                <p class="edu-card-date">Expires June 2026</p>
-                <p class="edu-card-desc">Demonstrates proficiency in Kubernetes administration including cluster management, deployment strategies, and troubleshooting at scale.</p>
-              </div>
-            </div>
-            <div class="disk-frame-label-foot"></div>
-          </div>
-        </div>
-
+        </div><!-- /.single-panel -->
       </div>
 
       <!-- Contact -->
@@ -1472,6 +1771,9 @@
       overlay.style.setProperty('--panel-clr', meta.clr);
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
+      // Always start content at the top
+      const lb = document.querySelector('#panel-' + panelId + ' .disk-frame-label-body');
+      if (lb) lb.scrollTop = 0;
     }
 
     function closePanel() {
